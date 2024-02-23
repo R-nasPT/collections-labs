@@ -1,0 +1,410 @@
+[
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e280"
+    },
+    "name": "Spider-Man",
+    "real_name": "Peter Parker",
+    "powers": [
+      "Wall-crawling",
+      "Super strength",
+      "Spider-sense"
+    ],
+    "affiliation": "Avengers",
+    "age": 25,
+    "status": true,
+    "appearance": {
+      "height": 178,
+      "weight": 70
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e281"
+    },
+    "name": "Iron Man",
+    "real_name": "Tony Stark",
+    "powers": [
+      "Genius-level intellect",
+      "Powered armor suit"
+    ],
+    "affiliation": "Avengers",
+    "age": 40,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 80
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e282"
+    },
+    "name": "Wonder Woman",
+    "real_name": "Diana Prince",
+    "powers": [
+      "Super strength",
+      "Flight",
+      "Lasso of Truth"
+    ],
+    "affiliation": "Justice League",
+    "age": 3000,
+    "status": true,
+    "appearance": {
+      "height": 183,
+      "weight": 70
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e283"
+    },
+    "name": "Black Panther",
+    "real_name": "T'Challa",
+    "powers": [
+      "Superhuman strength",
+      "Enhanced agility"
+    ],
+    "affiliation": "Avengers",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 180,
+      "weight": 85
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e284"
+    },
+    "name": "Captain America",
+    "real_name": "Steve Rogers",
+    "powers": [
+      "Superhuman strength",
+      "Shield proficiency"
+    ],
+    "affiliation": "Avengers",
+    "age": 100,
+    "status": true,
+    "appearance": {
+      "height": 188,
+      "weight": 95
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e285"
+    },
+    "name": "Thor",
+    "real_name": "Thor Odinson",
+    "powers": [
+      "Superhuman strength",
+      "Control over lightning"
+    ],
+    "affiliation": "Avengers",
+    "age": 1500,
+    "status": true,
+    "appearance": {
+      "height": 195,
+      "weight": 100
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e287"
+    },
+    "name": "Doctor Strange",
+    "real_name": "Stephen Strange",
+    "powers": [
+      "Mastery of the mystic arts",
+      "Time manipulation"
+    ],
+    "affiliation": "Avengers",
+    "age": 45,
+    "status": true,
+    "appearance": {
+      "height": 183,
+      "weight": 75
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e288"
+    },
+    "name": "Black Widow",
+    "real_name": "Natasha Romanoff",
+    "powers": [
+      "Expert martial artist",
+      "Espionage skills"
+    ],
+    "affiliation": "Avengers",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 170,
+      "weight": 58
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "658424c749c100848b06e289"
+    },
+    "name": "Deadpool",
+    "real_name": "Wade Wilson",
+    "powers": [
+      "Healing factor",
+      "Expert marksman"
+    ],
+    "affiliation": "X-Force",
+    "age": 30,
+    "status": true,
+    "appearance": {
+      "height": 188,
+      "weight": 95
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "6584263349c100848b06e28d"
+    },
+    "name": "Superman",
+    "real_name": "Clark Kent",
+    "powers": [
+      "Super strength",
+      "Flight",
+      "Heat vision"
+    ],
+    "affiliation": "Justice League",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 191,
+      "weight": 101
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "6584292249c100848b06e290"
+    },
+    "name": "Batman",
+    "real_name": "Bruce Wayne",
+    "powers": [
+      "Peak human physical condition",
+      "Genius-level intellect"
+    ],
+    "affiliation": "Justice League",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 188,
+      "weight": 95
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "6584292249c100848b06e291"
+    },
+    "name": "The Flash",
+    "real_name": "Barry Allen",
+    "powers": [
+      "Super speed",
+      "Time travel"
+    ],
+    "affiliation": "Justice League",
+    "age": 30,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 81
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "6584292249c100848b06e292"
+    },
+    "name": "Aquaman",
+    "real_name": "Arthur Curry",
+    "powers": [
+      "Super strength",
+      "Telepathy with marine life"
+    ],
+    "affiliation": "Justice League",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 102
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "6584292249c100848b06e293"
+    },
+    "name": "Wolverine",
+    "real_name": "Logan",
+    "powers": [
+      "Regenerative healing",
+      "Adamantium claws",
+      "Enhanced senses"
+    ],
+    "affiliation": "X-Men",
+    "age": 150,
+    "status": true,
+    "appearance": {
+      "height": 160,
+      "weight": 135
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "6584292249c100848b06e294"
+    },
+    "name": "Doctor Fate",
+    "real_name": "Kent Nelson",
+    "powers": [
+      "Mystic abilities",
+      "Teleportation",
+      "Flight",
+      "Superhuman strength"
+    ],
+    "affiliation": "Justice Society",
+    "age": 40,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 80
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "65842e4049c100848b06e298"
+    },
+    "name": "Hawkman",
+    "real_name": "Carter Hall",
+    "powers": [
+      "Enhanced strength",
+      "Flight",
+      "Nth metal weaponry"
+    ],
+    "affiliation": "Justice Society",
+    "age": 40,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 95
+    },
+    "universe": "DC"
+  },
+  {
+    "_id": {
+      "$oid": "65842e4049c100848b06e299"
+    },
+    "name": "Mr.Fantastic",
+    "real_name": "Reed Richards",
+    "powers": [
+      "Elasticity",
+      "Genius-level intellect"
+    ],
+    "affiliation": "Fantastic Four",
+    "age": 40,
+    "status": true,
+    "appearance": {
+      "height": 185,
+      "weight": 82
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "65842e4049c100848b06e29a"
+    },
+    "name": "Human Torch",
+    "real_name": "Johnny Storm",
+    "powers": [
+      "Pyrokinesis",
+      "Flight"
+    ],
+    "affiliation": "Fantastic Four",
+    "age": 30,
+    "status": true,
+    "appearance": {
+      "height": 178,
+      "weight": 70
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "65842f5c49c100848b06e29c"
+    },
+    "name": "Ikaris",
+    "powers": [
+      "Superhuman strength",
+      "Flight",
+      "Energy projection"
+    ],
+    "affiliation": "The Eternals",
+    "age": 5000,
+    "status": true,
+    "appearance": {
+      "height": 183,
+      "weight": 85
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "65842fde49c100848b06e29f"
+    },
+    "name": "Star-Lord",
+    "real_name": "Peter Quill",
+    "powers": [
+      "Expert hand-to-hand combatant",
+      "Skilled marksman",
+      "Leadership"
+    ],
+    "affiliation": "Guardians of the Galaxy",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 188,
+      "weight": 81
+    },
+    "universe": "Marvel"
+  },
+  {
+    "_id": {
+      "$oid": "65842fde49c100848b06e2a0"
+    },
+    "name": "Green Lantern",
+    "real_name": "Hal Jordan",
+    "powers": [
+      "Power ring with various abilities",
+      "Flight",
+      "Construct creation"
+    ],
+    "affiliation": "Green Lantern Corps",
+    "age": 35,
+    "status": true,
+    "appearance": {
+      "height": 188,
+      "weight": 90
+    },
+    "universe": "DC"
+  }
+]
