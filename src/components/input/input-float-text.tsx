@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function InputFloatText({ label, message, register, errors, required = false } : any) {
 
   // -- function การห้ามเว้นว่างตัวอักษรแรก กด space bar ไม่ได้ --
