@@ -13,7 +13,6 @@ export default function Mock() {
   return (
     <>
       <div className="grid grid-cols-2 max-w-screen- w-full mx-auto">
-        {" "}
         {/* max-w-screen-sm w-full mx-auto <--นี่คือ container ที่คล้ายกับ MUI */}
         <button onClick={() => setToggle()}>click toggle</button>
       </div>
