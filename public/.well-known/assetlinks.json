@@ -1,0 +1,24 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.sasomnative",
+      "sha256_cert_fingerprints": [
+        "6c:44:cc:6d:82:d2:cc:66:27:e8:24:f6:07:4a:b7:8b:8f:51:c0:0a:b3:a4:be:e7:95:60:45:78:ed:ce:dc:14",
+        "63:85:d6:17:6e:1f:4b:73:f0:67:16:70:73:d0:71:03:7d:02:3e:63:0a:9c:fe:d2:fc:1e:fc:da:01:17:15:80",
+        "63:85:D6:17:6E:1F:4B:73:F0:67:16:70:73:D0:71:03:7D:02:3E:63:0A:9C:FE:D2:FC:1E:FC:DA:01:17:15:80"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "web",
+      "site": "https://sasom.co.th",
+      "path": "/en/campaign/seller",
+      "include_children": false
+      // "sha256_cert_fingerprints": []
+    }
+  }
+]

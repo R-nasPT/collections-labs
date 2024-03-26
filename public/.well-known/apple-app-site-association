@@ -1,0 +1,42 @@
+{
+  "applinks": {
+      "apps": [],
+      "details": [
+          {
+              "appIDs": [
+                  "R774M53VWS.com.sasom.sasomunicorn",
+                  "com.sasom.sasomunicorn"
+              ],
+              "appID": "R774M53VWS.com.sasom.sasomunicorn",
+              "paths": [
+                  "/",
+                  "/en",
+                  "/th",
+                  "/en/shoes/*",
+                  "/en/apparel/*",
+                  "/en/collectibles/*",
+                  "/en/bags/*",
+                  "/en/accessories/*",
+                  "/th/shoes/*",
+                  "/th/apparel/*",
+                  "/th/collectibles/*",
+                  "/th/bags/*",
+                  "/th/accessories/*",
+                  "/en/profile",
+                  "/th/profile",
+                  "/en/trends",
+                  "/th/trends",
+                  "/en/upcoming",
+                  "/th/upcoming",
+                  "en/launches/*",
+                  "th/launches/*"
+              ]
+          }
+      ]
+  },
+  "webcredentials": {
+      "apps": [
+          "R774M53VWS.com.sasom.sasomunicorn"
+      ]
+  }
+}
