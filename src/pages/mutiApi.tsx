@@ -78,7 +78,7 @@ export default function MutiApi() {
   console.log("3 :", thirdData);
 
     // ---------- One Fetch Data ----------
-  const [zoroData, setZeroData] = useState<User[]>([]);
+  const [zeroData, setZeroData] = useState<User[]>([]);
 
   useEffect(() => {
     const oneFetchData = async () => {
@@ -90,11 +90,11 @@ export default function MutiApi() {
     oneFetchData();
   }, []);
 
-  console.log("0 :", zoroData);
+  console.log("0 :", zeroData);
 
   return (
     <>
-      <div>{zoroData[0]?.email}</div>
+      <div>{zeroData[0]?.email}</div>
       <div>{firstData[0]?.title}</div>
       <div>{secondData[0]?.body}</div>
       <div>{thirdData[0]?.name}</div>

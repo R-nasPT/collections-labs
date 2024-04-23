@@ -13,9 +13,13 @@
     "@tanstack/react-query": "^5.14.6",
     "axios": "^1.6.2",
     "react": "^18.2.0",
+    "react-countup": "^6.5.3",
     "react-dom": "^18.2.0",
+    "react-fast-marquee": "^1.6.4",
     "react-hook-form": "^7.49.2",
+    "react-random-reveal": "^2.0.0",
     "react-router-dom": "^6.21.1",
+    "react-text-loop-next": "^0.0.3",
     "react-type-animation": "^3.2.0"
   },
   "devDependencies": {
