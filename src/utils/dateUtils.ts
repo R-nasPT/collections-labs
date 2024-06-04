@@ -81,7 +81,7 @@ const formatDate = (datestring: string | undefined): string | undefined => {
   // วิธีใช้
   const today = new Date();
   const nextWeek = addDays(today, 7);
-  // <p>Next week's date: {nextWeek.toDateString()}</p>
+  // <p>Next week's date: {nextWeek.toDateString()}</p> <-- ใช้ใน jsx
   
   export const subtractDays = (date: Date, days: number): Date => {
     const result = new Date(date);
