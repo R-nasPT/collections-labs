@@ -71,4 +71,21 @@ const formatDate = (datestring: string | undefined): string | undefined => {
   };
   
   export { formatDate, formatDateTime, formatTime, timeMinusSeven, formatThaiDateTime };
+
+  export const addDays = (date: Date, days: number): Date => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
+  // วิธีใช้
+  const today = new Date();
+  const nextWeek = addDays(today, 7);
+  // <p>Next week's date: {nextWeek.toDateString()}</p>
+  
+  export const subtractDays = (date: Date, days: number): Date => {
+    const result = new Date(date);
+    result.setDate(result.getDate() - days);
+    return result;
+  };
   
