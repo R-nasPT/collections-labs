@@ -1,4 +1,6 @@
 // app/providers/providers.tsx
+"use client";
+
 import React from 'react';
 import { SessionProvider } from "next-auth/react";
 import { Provider as ReduxProvider } from 'react-redux';
