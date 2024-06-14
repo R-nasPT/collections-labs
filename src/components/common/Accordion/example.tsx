@@ -7,7 +7,7 @@ export default function Home() {
       <section className="flex justify-end">
         <div className="bg-gray-200 w-full px-5 py-3 flex flex-col gap-3">
           <Accordion
-            title={<button className="bg-red-500">sdfdfsdfdsf</button>}
+            title={<div className="bg-red-500">sdfdfsdfdsf</div>}
           >
             <div className="py-3">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi
@@ -18,7 +18,7 @@ export default function Home() {
           </Accordion>
           <hr className="border border-black"/>
           <Accordion
-            title={<button className="bg-red-500">sdfdfsdfdsf</button>}
+            title={<div className="bg-red-500">sdfdfsdfdsf</div>}
           >
             <div className="py-3">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi
