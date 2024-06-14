@@ -13,7 +13,7 @@ export default function Accordion({ title, children }: AccordionProps) {
         className="flex justify-between w-full"
         onClick={() => setOpen(!open)}
       >
-        <span>{title}</span>
+        <div>{title}</div>
         <svg
           className="fill-indigo-500 shrink-0 ml-8"
           width="16"
