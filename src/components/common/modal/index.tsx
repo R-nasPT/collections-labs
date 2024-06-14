@@ -16,7 +16,7 @@ export default function Modal({ open, onClose, children }: ModalProps) {
 
       <div
         className={`fixed inset-0 flex justify-center items-center transition-colors ${
-          open ? "visible bg-black/20" : "invisible"
+          open ? "visible bg-black/20 backdrop-blur-sm" : "invisible"      //<--- ถ้าอยากให้เบลอก็ใส่ backdrop-blur
         }`}
         onClick={onClose}
       >
