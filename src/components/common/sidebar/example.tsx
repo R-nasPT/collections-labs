@@ -19,10 +19,6 @@ export default function Home() {
           <Card />
           <Card />
         </Sidebar>
-        <button onClick={() => setOpenTop(!openTop)}>1</button>
-        <button onClick={() => setOpenRight(!openRight)}>2</button>
-        <button onClick={() => setOpenLeft(!openLeft)}>3</button>
-        <button onClick={() => setOpenBottom(!openBottom)}>4</button>
       </div>
       
     </div>
