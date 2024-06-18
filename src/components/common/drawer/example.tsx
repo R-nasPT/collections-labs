@@ -1,0 +1,25 @@
+"use client";
+import Drawer from "@/components/drawer";
+import { useState } from "react";
+
+export default function Home() {
+
+  const [openRight, setOpenRight] = useState(false);
+  const [openLeft, setOpenLeft] = useState(false);
+  const [openBottom, setOpenBottom] = useState(false);
+  const [openTop, setOpenTop] = useState(false);
+  return (
+    <div className="bg-white h-screen w-screen flex flex-col justify-center items-center">
+      <div className="flex justify-center items-center gap-5 w-screen">
+        <button onClick={() => setOpenTop(!openTop)}>1</button>
+        <button onClick={() => setOpenRight(!openRight)}>2</button>
+        <button onClick={() => setOpenLeft(!openLeft)}>3</button>
+        <button onClick={() => setOpenBottom(!openBottom)}>4</button>
+      </div>
+      <Drawer open={openRight} side="right" setOpen={setOpenRight}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus quae totam quo unde odit, sequi distinctio nemo. Id nobis, quaerat consectetur laudantium numquam repellat quidem, rerum fugit exercitationem hic adipisci quas sunt totam. Minima, pariatur. Officiis quo cumque similique, atque ipsam, nisi voluptatum expedita officia aliquid placeat est minus. Impedit atque ipsa amet eius, voluptates in nulla rem aliquid deleniti temporibus magni ullam ex ducimus pariatur quisquam esse. Facere odit et, repudiandae deleniti obcaecati cupiditate voluptas expedita praesentium, quis sit eligendi at maiores repellat. Reprehenderit corrupti asperiores unde quos tempore, possimus aliquid minus sint sapiente dolores molestiae minima eligendi, ullam dolorem quaerat impedit necessitatibus? Doloremque magnam deserunt cupiditate ex dolorum quisquam, assumenda blanditiis. Repellendus enim nulla natus est, laborum eaque suscipit vitae quia, animi cum at fuga esse saepe quaerat! Quos iure voluptate, adipisci perspiciatis velit praesentium veniam ea amet, id reprehenderit nisi ab corrupti incidunt maxime quod quibusdam consectetur ducimus autem sapiente, recusandae ad minus? Expedita sapiente veniam excepturi assumenda, corporis iure nobis harum pariatur at delectus praesentium ducimus fugiat voluptatum velit perspiciatis consequuntur! Laboriosam illo modi ducimus fuga porro, ipsa vel debitis est delectus, perferendis dolore! Corrupti asperiores numquam laborum quod ex. Temporibus necessitatibus earum nostrum aliquam aspernatur rem incidunt perspiciatis mollitia porro fugit, voluptates, corrupti magni accusantium consequatur quae iste commodi aperiam consequuntur cupiditate esse labore dolores sapiente voluptate. Explicabo ipsa recusandae similique deserunt assumenda facere eveniet, saepe totam corporis non laborum omnis ducimus molestiae! Obcaecati quibusdam inventore quasi repudiandae! Aperiam, earum pariatur. Sunt doloribus architecto magni earum nulla hic, aperiam alias error rem minus maxime obcaecati inventore dignissimos mollitia illo quisquam laborum odio nemo. Voluptatem accusamus tempore dolor, architecto recusandae, vel iure quos velit exercitationem neque voluptate harum nihil cumque ex cupiditate consequuntur. Reiciendis, odit. Porro, earum. Quis vero maiores neque voluptatem voluptate deserunt in qui excepturi tempora natus quos saepe quibusdam exercitationem sapiente cum repellendus assumenda minus est perferendis ea, architecto aspernatur nesciunt dicta quae. Nemo, maiores consequatur ad repudiandae cupiditate recusandae impedit suscipit rerum, porro ea vitae sint saepe odit eligendi natus expedita. Commodi temporibus est ipsam saepe obcaecati. Modi, fugit. Consequuntur quis dolores dolorum quibusdam adipisci possimus, quos, sapiente debitis beatae, aliquid modi error corporis harum fuga facere rem vitae recusandae repellendus accusantium at eaque consectetur ab. Ducimus, eum praesentium. Eveniet ullam porro placeat inventore impedit corrupti deserunt, repellendus beatae reiciendis et cum doloremque dicta a iste aspernatur? Harum facilis eius, nam, numquam perspiciatis dolore ab, porro consectetur illo architecto tenetur eveniet ipsam? Expedita rerum, vel exercitationem nobis odit sapiente adipisci? Dolor ad quia reprehenderit facilis ut earum, vitae nesciunt deleniti rem quae aliquid alias delectus natus non, eos temporibus pariatur explicabo quas tempora suscipit odio deserunt nobis recusandae facere. Numquam eaque quae, sed qui deserunt incidunt libero accusantium officia quaerat aliquam quidem adipisci nobis repellat esse quis tempora praesentium! Odit quae cum porro suscipit quibusdam repudiandae soluta? Illo dicta quod nulla laboriosam deleniti. Molestias nihil, perspiciatis ad exercitationem atque esse praesentium quaerat laudantium, necessitatibus enim error accusantium labore laboriosam. Est, et dolor.</Drawer>
+      <Drawer open={openLeft} side="left" size='80%' setOpen={setOpenLeft}>qwerty</Drawer>
+      <Drawer open={openBottom} side="bottom" setOpen={setOpenBottom}>qwerty</Drawer>
+      <Drawer open={openTop} side="top" setOpen={setOpenTop}>qwerty</Drawer>
+    </div>
+  );
+}
