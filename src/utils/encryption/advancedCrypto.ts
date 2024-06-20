@@ -51,3 +51,22 @@ export function decrypt(encryptedMessage) {
   const decrypted = CryptoJS.AES.decrypt(ciphertext, key, { iv: iv, padding: CryptoJS.pad.Pkcs7 });
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
+
+
+// --- วิธีใช้งาน ---
+import { encrypt, decrypt } from './crypto.js';
+
+// ข้อความที่ต้องการเข้ารหัส
+const message = 'Hello, World!';
+
+// เข้ารหัส
+const encryptedMessage = encrypt(message);
+console.log('Encrypted:', encryptedMessage);
+
+// ถอดรหัส
+try {
+  const decryptedMessage = decrypt(encryptedMessage);
+  console.log('Decrypted:', decryptedMessage);
+} catch (error) {
+  console.error('Decryption failed:', error.message);
+}
