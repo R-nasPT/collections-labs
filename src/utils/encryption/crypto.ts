@@ -1,19 +1,3 @@
-// ------------ function ------------
-const CryptoJS = require('crypto-js');
-
-// ฟังก์ชันสำหรับเข้ารหัสข้อมูล
-function encryptData(message, key) {
-    const ciphertext = CryptoJS.AES.encrypt(message, key).toString();
-    return ciphertext;
-}
-
-// ฟังก์ชันสำหรับถอดรหัสข้อมูล
-function decryptData(ciphertext, key) {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, key);
-    const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8);
-    return decryptedMessage;
-}
-
 // ------------ advance -------------
 import CryptoJS from 'crypto-js';
 
@@ -59,3 +43,35 @@ const bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
 const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
 console.log(decryptedData); // [{id: 1}, {id: 2}]
+
+
+// ------------ function ------------
+const CryptoJS = require('crypto-js');
+
+// ฟังก์ชันสำหรับเข้ารหัสข้อมูล
+function encryptData(message, key) {
+    const ciphertext = CryptoJS.AES.encrypt(message, key).toString();
+    return ciphertext;
+}
+
+// ฟังก์ชันสำหรับถอดรหัสข้อมูล
+function decryptData(ciphertext, key) {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, key);
+    const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8);
+    return decryptedMessage;
+}
+
+// ตัวอย่างการใช้งาน
+(() => {
+    // สร้างคีย์สำหรับการเข้ารหัสและถอดรหัส (ในตัวอย่างนี้ใช้ passphrase แทน)
+    const key = 'passphrase';
+
+    // เข้ารหัสข้อความ
+    const message = 'Hello, world!';
+    const ciphertext = encryptData(message, key);
+    console.log('Encrypted message:', ciphertext);
+
+    // ถอดรหัสข้อความ
+    const decryptedMessage = decryptData(ciphertext, key);
+    console.log('Decrypted message:', decryptedMessage);
+})();
