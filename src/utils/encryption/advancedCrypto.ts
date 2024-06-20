@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-const secretKey = process.env.SECRET_KEY;
+const secretKey = process.env.CRYPTO_KEY;
 
 // กำหนดการตั้งค่าทั่วไป
 const keySize = 256;
