@@ -35,6 +35,7 @@ export function encrypt(message) {
 
 export function decrypt(encryptedMessage) {
   const jsonData = JSON.parse(encryptedMessage);
+  
   const salt = CryptoJS.enc.Hex.parse(jsonData.salt);
   const iv = CryptoJS.enc.Hex.parse(jsonData.iv);
   const ciphertext = jsonData.ciphertext;
