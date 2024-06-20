@@ -1,3 +1,19 @@
+// ------------ function ------------
+const CryptoJS = require('crypto-js');
+
+// ฟังก์ชันสำหรับเข้ารหัสข้อมูล
+function encryptData(message, key) {
+    const ciphertext = CryptoJS.AES.encrypt(message, key).toString();
+    return ciphertext;
+}
+
+// ฟังก์ชันสำหรับถอดรหัสข้อมูล
+function decryptData(ciphertext, key) {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, key);
+    const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8);
+    return decryptedMessage;
+}
+
 // ------------ advance -------------
 import CryptoJS from 'crypto-js';
 
