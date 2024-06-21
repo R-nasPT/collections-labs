@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-const secretKey = process.env.CRYPTO_KEY;
+const secretKeyHash = CryptoJS.SHA256(process.env.CRYPTO_KEY); // Hash the secret key
 
 // กำหนดการตั้งค่าทั่วไป
 const keySize = 256;
@@ -8,13 +8,13 @@ const iterations = 1000;
 
 function generateKeyAndIV() {
   const salt = CryptoJS.lib.WordArray.random(128 / 8);
-  const key = CryptoJS.PBKDF2(secretKey, salt, { keySize: keySize / 32, iterations: iterations });
+  const key = CryptoJS.PBKDF2(secretKeyHash, salt, { keySize: keySize / 32, iterations: iterations });
   const iv = CryptoJS.lib.WordArray.random(128 / 8);
   return { key, iv, salt };
 }
 
 function generateHMAC(ciphertext, key) {
-  return CryptoJS.HmacSHA256(ciphertext, key).toString();
+  return CryptoJS.HmacSHA256(ciphertext, key).toString(CryptoJS.enc.Hex);
 }
 
 export function encrypt(message) {
@@ -26,8 +26,8 @@ export function encrypt(message) {
   // เราจำเป็นต้องเก็บ salt, iv และ hmac ไว้เพื่อใช้ในการถอดรหัส
   const result = {
     ciphertext: ciphertext,
-    salt: salt.toString(),
-    iv: iv.toString(),
+    salt: salt.toString(CryptoJS.enc.Base64),
+    iv: iv.toString(CryptoJS.enc.Base64),
     hmac: hmac
   };
   return JSON.stringify(result);
@@ -36,12 +36,15 @@ export function encrypt(message) {
 export function decrypt(encryptedMessage) {
   const jsonData = JSON.parse(encryptedMessage);
   
-  const salt = CryptoJS.enc.Hex.parse(jsonData.salt);
-  const iv = CryptoJS.enc.Hex.parse(jsonData.iv);
+  //const salt = CryptoJS.enc.Hex.parse(jsonData.salt);
+  //const iv = CryptoJS.enc.Hex.parse(jsonData.iv);
+
+  const salt = CryptoJS.enc.Base64.parse(jsonData.salt);
+  const iv = CryptoJS.enc.Base64.parse(jsonData.iv);
   const ciphertext = jsonData.ciphertext;
   const hmac = jsonData.hmac;
 
-  const key = CryptoJS.PBKDF2(secretKey, salt, { keySize: keySize / 32, iterations: iterations });
+  const key = CryptoJS.PBKDF2(secretKeyHash, salt, { keySize: keySize / 32, iterations: iterations });
   
   // ตรวจสอบความถูกต้องของ HMAC
   const newHmac = generateHMAC(ciphertext, key);
