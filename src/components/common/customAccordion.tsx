@@ -47,7 +47,7 @@ import Accordion from './Accordion';
 function AccordionGroup() {
   const [openAccordions, setOpenAccordions] = useState([false, false, false]);
 
-  const toggleAccordion = (index) => {
+  const toggleAccordion = (index: number) => {
     setOpenAccordions(prevState => 
       prevState.map((item, i) => i === index ? !item : item)
     );
