@@ -136,8 +136,6 @@ const toggleAccordion = (id) => {
 // วิธีนี้จะปิด Accordion อื่นๆ เมื่อเปิด Accordion ใหม่
 
 //ต้องการให้จำนวน Accordion มีความยืดหยุ่น คุณสามารถส่งพารามิเตอร์เพิ่มเติมเข้าไปในฟังก์ชัน:
-// src/utils/toggleAccordion.ts
-
 export const toggleAccordion = (index: number, prevState: boolean[] | boolean, count: number = 5): boolean[] => {
   if (Array.isArray(prevState)) {
     return prevState.map((item, i) => (i === index ? !item : item));
