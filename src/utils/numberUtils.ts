@@ -15,4 +15,11 @@ export const formatCurrency = (num: number): string => {
   export const isOdd = (num: number): boolean => {
     return num % 2 !== 0;
   };
-  
+
+const formatNumber = (num: number, decimals: number = 0): string => {
+  return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+};
+
+// ใช้งาน
+console.log(formatNumber(22668)); // "22,668"
+console.log(formatNumber(22668.123, 2)); // "22,668.12"
