@@ -66,36 +66,62 @@ export default function DeliveryOrders() {
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-[0_0_3px_rgba(0,0,0,0.3)]">
-      {selectedCount > 0 && (
-        <div className="mb-4">
+       {selectedCount > 0 && (
+        <div className="bg-[#eee8fa] py-5 px-3">
           Selected {selectedCount} item(s)
         </div>
       )}
-
+     
       <table className="hidden lg:table w-full text-sm text-[#280d5f] text-left">
         <thead>
           <tr className="border-b border-[#e0e0e0]">
             <th className="p-1">
-              <Checkbox 
-                id="selectAll" 
+              <Checkbox
+                id="selectAll"
                 checked={isAllSelected}
                 onChange={handleSelectAll}
               />
             </th>
-            {/* ... (ส่วนหัวตารางอื่น ๆ) */}
+            <th className="font-normal p-4">Document Code</th>
+            <th className="font-normal p-4">Reference</th>
+            <th className="font-normal p-4">Customer Name</th>
+            <th className="font-normal p-4">Tracking Number</th>
+            <th className="font-normal p-4">Status</th>
+            <th className="font-normal p-4">Last Update</th>
           </tr>
         </thead>
         <tbody>
-          {orders.map(order => (
-            <tr key={order.id} className="border-b border-[#e0e0e0]">
+          {orders.map((order: any) => (
+            <tr
+              key={order.id}
+              className={`border-b border-[#e0e0e0] ${
+                selectedItems[order.id] ? "bg-[#eee8fa]" : ""
+              }`}
+            >
               <td className="p-1">
-                <Checkbox 
+                <Checkbox
                   id={`row-${order.id}`}
                   checked={selectedItems[order.id] || false}
                   onChange={handleSelectItem(order.id)}
                 />
               </td>
-              {/* ... (ข้อมูลแถวอื่น ๆ) */}
+              <td className="p-4">30849</td>
+              <td className="p-4">PO-202407025</td>
+              <td className="p-4">
+                <p>ท***ียา</p>
+                <p>2407-0G4-00803</p>
+              </td>
+              <td className="p-4 whitespace-nowrap">
+                <p>TikTok Pickup (เจ้าหน้าที่มารับที่โกดัง)</p>
+                <p>TH01105WT86K9E</p>
+              </td>
+              <td className="p-4">
+                <div className="flex items-center gap-2 border border-[#a07ee4] text-[#7645d9] text-[13px] cursor-pointer hover:bg-gray-100 pl-1 pr-2 py-[.5px] w-fit rounded-full transition-colors duration-300">
+                  <div className="p-[6px] bg-[#ffb864] rounded-full"></div>
+                  <span>Pending </span>
+                </div>
+              </td>
+              <td className="p-4">Thu 11 Jul 2024 09:37:17</td>
             </tr>
           ))}
         </tbody>
