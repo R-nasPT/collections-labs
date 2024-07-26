@@ -14,15 +14,15 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = searchParams.get("page") ?? "1";
-  const per_page = searchParams.get("per_page") ?? "10";
+  const page = Number(searchParams.get("page") ?? "1");
+  const per_page = Number(searchParams.get("per_page") ?? "10");
 
-  const totalPages = Math.ceil(total / Number(per_page));
-  const start = (Number(page) - 1) * Number(per_page) + 1;
-  const end = Math.min(Number(page) * Number(per_page), total);
+  const totalPages = Math.ceil(total / per_page);
+  const start = (page - 1) * per_page + 1;
+  const end = Math.min(page * per_page, total);
 
-  const prevPageUrl = `${pathname}?page=${Number(page) - 1}&per_page=${per_page}`;
-  const nextPageUrl = `${pathname}?page=${Number(page) + 1}&per_page=${per_page}`;
+  const prevPageUrl = `${pathname}?page=${page - 1}&per_page=${per_page}`;
+  const nextPageUrl = `${pathname}?page=${page + 1}&per_page=${per_page}`;
 
   const renderPageNumbers = () => {
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -32,17 +32,17 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
         if (
           i === 1 ||
           i === totalPages ||
-          (i >= Number(page) - 1 && i <= Number(page) + 1) ||
-          (i === 2 && Number(page) > 4) ||
-          (i === totalPages - 1 && Number(page) < totalPages - 3)
+          (i >= page - 1 && i <= page + 1) ||
+          (i === 2 && page > 4) ||
+          (i === totalPages - 1 && page < totalPages - 3)
         ) {
           return (
             <Link
               key={i}
               href={`${pathname}?page=${i}&per_page=${per_page}`}
-              aria-current={Number(page) === i ? "page" : undefined}
+              aria-current={page === i ? "page" : undefined}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                Number(page) === i
+                page === i
                   ? "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
               }`}
@@ -51,8 +51,8 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
             </Link>
           );
         } else if (
-          (i === 3 && Number(page) > 4) ||
-          (i === totalPages - 2 && Number(page) < totalPages - 3)
+          (i === 3 && page > 4) ||
+          (i === totalPages - 2 && page < totalPages - 3)
         ) {
           return (
             <span
