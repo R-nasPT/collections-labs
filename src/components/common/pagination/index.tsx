@@ -10,11 +10,7 @@ interface PaginationProps {
   total: number;
 }
 
-export default function Pagination({
-  hasNextPage,
-  hasPrevPage,
-  total,
-}: PaginationProps) {
+export default function Pagination({ hasNextPage, hasPrevPage, total }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -25,12 +21,8 @@ export default function Pagination({
   const start = (Number(page) - 1) * Number(per_page) + 1;
   const end = Math.min(Number(page) * Number(per_page), total);
 
-  const prevPageUrl = `${pathname}?page=${
-    Number(page) - 1
-  }&per_page=${per_page}`;
-  const nextPageUrl = `${pathname}?page=${
-    Number(page) + 1
-  }&per_page=${per_page}`;
+  const prevPageUrl = `${pathname}?page=${Number(page) - 1}&per_page=${per_page}`;
+  const nextPageUrl = `${pathname}?page=${Number(page) + 1}&per_page=${per_page}`;
 
   const renderPageNumbers = () => {
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -130,7 +122,9 @@ export default function Pagination({
                 <span className="sr-only">Previous</span>
                 <IoIosArrowBack aria-hidden="true" className="h-5 w-5" />
               </Link>
+
               {renderPageNumbers()}
+
               <Link
                 href={nextPageUrl}
                 className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
