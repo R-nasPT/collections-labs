@@ -15,7 +15,7 @@ export default function Drawer({ isOpen, onClose, children }: DrawerProps) {
       )}
 
       {/* ----- Desktop ----- */}
-      <div
+      <aside
         className={`fixed z-[100] transition-all duration-300 ease-in-out hidden lg:block
         w-1/2 h-full
         ${isOpen ? "translate-x-0" : "translate-x-full"}
@@ -23,23 +23,26 @@ export default function Drawer({ isOpen, onClose, children }: DrawerProps) {
         bg-white shadow-xl`}
       >
         <div className="p-4">{children}</div>
-      </div>
+      </aside>
 
       {/* ----- Mobile ----- */}
-      <div
-        className={`fixed z-[100] transition-all duration-300 ease-in-out lg:hidden
+      <aside
+        className={`fixed z-[100] transition-all duration-300 ease-in-out lg:hidden overflow-hidden
          w-full h-[90%] rounded-t-2xl
         ${isOpen ? "translate-y-0" : "translate-y-full"}
         bottom-0 left-0
         bg-white shadow-xl`}
       >
-        <div className="p-4">
-          <div className="flex justify-center mb-2">
+        <section>
+          <div
+            className="flex justify-center p-2 mb-2 bg-gray-50"
+            onClick={onClose}
+          >
             <div className="py-1 w-14 bg-slate-400 rounded-full"></div>
           </div>
           {children}
-        </div>
-      </div>
+        </section>
+      </aside>
     </>
   );
 }
