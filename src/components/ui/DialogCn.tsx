@@ -62,7 +62,7 @@ export default function Dialog({
 
       {/* Mobile */}
       <section
-        className={cn('fixed bottom-0 left-0 right-0 h-1/2 rounded-t-2xl overflow-hidden transition-all duration-300 ease-in-out lg:hidden', {
+        className={cn('fixed bottom-0 left-0 right-0 rounded-t-2xl overflow-hidden transition-all duration-300 ease-in-out lg:hidden', {
           'opacity-100 translate-y-0': open,
           'opacity-0 translate-y-5': !open,
         }, getMobileDialogSize())}
