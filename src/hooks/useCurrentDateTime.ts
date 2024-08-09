@@ -8,33 +8,14 @@ const useCurrentDateTime = () => {
 
   const updateDateTime = useCallback(() => {
     const now = new Date();
-    const newDate = formatDate(now);
-    const newTime = formatTime(now);
-    const newSeconds = formatSeconds(now);
-
-    setCurrentDate(newDate);
-    setCurrentTime(newTime);
-    setSeconds(newSeconds);
+    setCurrentDate(formatDate(now));
+    setCurrentTime(formatTime(now));
+    setSeconds(formatSeconds(now));
   }, []);
 
   useEffect(() => {
     updateDateTime(); // อัพเดตครั้งแรกทันที
-
-    const interval = setInterval(() => {
-      const now = new Date();
-      const newSeconds = formatSeconds(now);
-      setSeconds(newSeconds);
-
-      // ตรวจสอบการเปลี่ยนแปลงของวันและชั่วโมง
-      if (now.getMinutes() === 0 && now.getSeconds() === 0) {
-        // อัพเดตทุกชั่วโมง
-        updateDateTime();
-      } else if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
-        // อัพเดตเมื่อเปลี่ยนวัน
-        updateDateTime();
-      }
-    }, 1000);
-
+    const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
   }, [updateDateTime]);
 
