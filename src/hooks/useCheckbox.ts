@@ -4,7 +4,7 @@ interface Item {
   id: string;
 }
 
-function useCheckbox(items: Item[]) {
+const useCheckbox = (items: Item[]) => {
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,16 +33,29 @@ function useCheckbox(items: Item[]) {
     [selectedItems]
   );
 
+  const selectedIds = useMemo(() => 
+    Object.entries(selectedItems)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([id, _]) => id),
+    [selectedItems]
+  );
+
+  const resetSelection = useCallback(() => {
+    setSelectedItems({});
+  }, []);
+
   return {
     selectedItems,
     handleSelectAll,
     handleSelectItem,
     isAllSelected,
     selectedCount,
+    selectedIds,
+    resetSelection,
   };
 }
 
-export default useCheckbox;
+export default useCheckbox
 
 // =========================================
 import React, { useState } from "react";
