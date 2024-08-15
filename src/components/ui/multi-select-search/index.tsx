@@ -125,6 +125,7 @@ export default function SearchSelectField({
       {control ? (
         <Controller
           name={name}
+          defaultValue={defaultValue}
           control={control}
           render={({ field }) => renderSelect(field)}
         />
