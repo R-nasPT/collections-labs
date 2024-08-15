@@ -23,6 +23,7 @@ interface SearchSelectFieldProps {
   value?: Option;
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
+  padding?: string; // เพิ่ม prop สำหรับ padding
 }
 
 export default function SearchSelectField({
@@ -38,6 +39,7 @@ export default function SearchSelectField({
   value,
   defaultValue,
   onChange,
+  padding = "0.25rem 0.5rem", // กำหนดค่าเริ่มต้นสำหรับ padding
 }: SearchSelectFieldProps) {
   const { ref, toggleOpen, onClose } = useOutsideClick(false);
   const [hydrated, setHydrated] = React.useState(false);
@@ -64,7 +66,7 @@ export default function SearchSelectField({
       },
       boxShadow: "none",
       borderRadius: "1rem",
-      padding: "0.25rem 0.5rem",
+      padding: padding, // ใช้ padding จาก prop
     }),
     placeholder: (provided: any) => ({
       ...provided,
