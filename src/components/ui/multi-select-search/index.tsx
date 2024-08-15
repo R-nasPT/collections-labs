@@ -87,6 +87,14 @@ export default function SearchSelectField({
       ...provided,
       display: clearIndicator ? "flex" : "none",
     }),
+    menu: (provided: any) => ({
+      ...provided,
+      zIndex: 9999, // กำหนด z-index สูงเพื่อให้ dropdown อยู่ด้านบน
+    }),
+    menuPortal: (base: any) => ({
+      ...base,
+      zIndex: 9999, // ใช้ z-index สูงสำหรับ menuPortal
+    }),
   };
 
   const renderSelect = (field?: any) => {
@@ -102,6 +110,8 @@ export default function SearchSelectField({
       value,
       defaultValue: defaultValue,
       onChange,
+      menuPortalTarget: document.body, // ให้ dropdown อยู่ใน root ของ DOM
+      menuPosition: 'fixed', // ใช้ position fixed สำหรับ dropdown
     };
 
     if (loadOptions) {
