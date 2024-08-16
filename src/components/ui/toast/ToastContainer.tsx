@@ -40,7 +40,7 @@ export default function ToastContainer() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 flex flex-col items-center z-[9999] pt-4">
+    <div className="fixed top-0 left-0 right-0 flex flex-col items-center z-[9999] pt-4 space-y-2">
       {toasts.map((toast) => (
         <Toast
           key={toast.id}
