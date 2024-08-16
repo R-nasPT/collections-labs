@@ -6,6 +6,7 @@ interface ToastData {
   content: React.ReactNode | ((props: { onClose: () => void }) => React.ReactNode);
   duration?: number; // ระยะเวลาในมิลลิวินาที, undefined หมายถึงแสดงตลอด
   isClosing?: boolean;
+  animationDuration?: number;
 }
 
 export default function ToastContainer() {
@@ -13,7 +14,7 @@ export default function ToastContainer() {
 
   const addToast = (options: Omit<ToastData, 'id'>) => {
     const id = Date.now();
-    setToasts((prevToasts) => [...prevToasts, { id, ...options }]);
+    setToasts((prevToasts) => [{ id, ...options }, ...prevToasts]);
   };
 
   const removeToast = (id: number) => {
@@ -46,6 +47,7 @@ export default function ToastContainer() {
           content={toast.content}
           duration={toast.duration}
           onClose={() => removeToast(toast.id)}
+          animationDuration={toast.animationDuration}
         />
       ))}
     </div>
