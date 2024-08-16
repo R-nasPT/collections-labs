@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 interface ToastOptions {
   duration?: number;
   content: React.ReactNode | ((props: { onClose: () => void }) => React.ReactNode);
+  animationDuration?: number;
 }
 
 interface ToastEvent {
