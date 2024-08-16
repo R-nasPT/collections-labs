@@ -1,36 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { cn } from "@/utils/cn";
+import { useEffect, useState } from "react";
 
 interface ToastProps {
   content: React.ReactNode | ((props: { onClose: () => void }) => React.ReactNode);
   duration?: number;
   onClose: () => void;
-  onHeightChange: (height: number) => void;
+  animationDuration?: number;
 }
 
-export default function Toast({ content, duration, onClose, onHeightChange  }: ToastProps) {
+export default function Toast({ content, duration, onClose, animationDuration = 500 }: ToastProps) {
     const [isVisible, setIsVisible] = useState(false);
-    const toastRef = useRef<HTMLDivElement>(null);
-  
+    
+    const closeToast = () => {
+      setIsVisible(false);
+      setTimeout(onClose, animationDuration); // รอให้ animation เสร็จสิ้นก่อนเรียก onClose
+    };
+    
     useEffect(() => {
-      setTimeout(() => setIsVisible(true), 10);
-      
+        setTimeout(() => setIsVisible(true), 10);
+        
       if (duration !== undefined) {
-        const timer = setTimeout(closeToast, duration);
+        const timer = setTimeout(() => {
+          closeToast();
+        }, duration);
         return () => clearTimeout(timer);
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [duration]);
-  
-    useEffect(() => {
-      if (toastRef.current) {
-        onHeightChange(toastRef.current.offsetHeight);
-      }
-    }, [onHeightChange]);
-  
-    const closeToast = () => {
-      setIsVisible(false);
-      setTimeout(onClose, 500);
-    };
   
 
   const renderContent = () => {
@@ -42,10 +38,11 @@ export default function Toast({ content, duration, onClose, onHeightChange  }: T
 
   return (
     <div
-      className={`
-        transform transition-all duration-500 ease-out
-        ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}
-        `}
+      className={cn(
+        `transform transition-all ease-out`,
+        isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      )}
+      style={{ transitionDuration: `${animationDuration}ms` }} //<-- ไม่สามารถกำหนด ใน tailwind ได้
     >
       {renderContent()}
     </div>
