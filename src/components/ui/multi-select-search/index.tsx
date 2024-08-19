@@ -1,6 +1,8 @@
-import React from "react";
 import AsyncSelect from "react-select/async";
 import Select from 'react-select'
+import AsyncCreatableSelect from "react-select/async-creatable"
+import CreatableSelect from "react-select/creatable"
+import { useEffect, useState } from "react";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { useOutsideClick } from "@/hooks";
 import { cn } from "@/utils/cn";
@@ -15,15 +17,17 @@ interface SearchSelectFieldProps {
   placeholder: string;
   control?: Control<any>;
   errors?: FieldErrors;
-  loadOptions?: (inputValue: string) => Promise<Option[]>;
-  options?: Option[];
   className?: string;
-  showArrow?: boolean;
-  clearIndicator?: boolean;
   value?: Option;
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
   padding?: string; // เพิ่ม prop สำหรับ padding
+  showArrow?: boolean;
+  clearIndicator?: boolean;
+  isCreatable?: boolean;
+  options?: Option[];
+  loadOptions?: (inputValue: string) => Promise<Option[]>;
+  onCreateOption?: (inputValue: string) => void;
 }
 
 export default function SearchSelectField({
@@ -31,15 +35,17 @@ export default function SearchSelectField({
   placeholder,
   control,
   errors,
-  loadOptions,
-  options,
   className,
-  showArrow = true,
-  clearIndicator = true,
   value,
   defaultValue,
   onChange,
   padding = "0.25rem 0.5rem", // กำหนดค่าเริ่มต้นสำหรับ padding
+    showArrow = true,
+  clearIndicator = true,
+  isCreatable = false,
+  options,
+  loadOptions,
+  onCreateOption
 }: SearchSelectFieldProps) {
   const { ref, toggleOpen, onClose } = useOutsideClick(false);
   const [hydrated, setHydrated] = React.useState(false);
@@ -116,15 +122,12 @@ export default function SearchSelectField({
       menuPosition: 'fixed', // ใช้ position fixed สำหรับ dropdown
     };
 
-    if (loadOptions) {
-      return (
-        <AsyncSelect
-          {...commonProps}
-          loadOptions={loadOptions}
-          cacheOptions
-          defaultOptions
-        />
-      );
+    if (isCreatable && loadOptions) {
+      return <AsyncCreatableSelect {...commonProps} loadOptions={loadOptions} onCreateOption={onCreateOption}/>;
+    } else if (isCreatable) {
+      return <CreatableSelect {...commonProps} options={options} onCreateOption={onCreateOption}/>;
+    } else if (loadOptions) {
+      return <AsyncSelect {...commonProps} loadOptions={loadOptions} />;
     } else if (options) {
       return <Select {...commonProps} options={options} />;
     }
