@@ -21,11 +21,14 @@ interface SearchSelectFieldProps {
   value?: Option;
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
+  loadingMessage?: string;
   padding?: string;
   rounded?: string;
   showArrow?: boolean;
   clearIndicator?: boolean;
   isCreatable?: boolean;
+  isLoading?: boolean;
+  isDisabled?: boolean;
   options?: Option[];
   loadOptions?: (inputValue: string) => Promise<Option[]>;
   onCreateOption?: (inputValue: string) => void;
@@ -40,11 +43,14 @@ export default function SearchSelectField({
   value,
   defaultValue,
   onChange,
+  loadingMessage = "Loading...",
   padding = "0.25rem 0.5rem",
   rounded = "1rem",
   showArrow = true,
   clearIndicator = true,
   isCreatable = false,
+  isLoading,
+  isDisabled = false,
   options,
   loadOptions,
   onCreateOption
@@ -105,6 +111,11 @@ export default function SearchSelectField({
       ...base,
       zIndex: 9999,
     }),
+    loadingMessage: () => ({
+      color: "#43395b",
+      textAlign: "center",
+      fontStyle: "italic",
+    }),
   };
 
   const renderSelect = (field?: any) => {
@@ -122,6 +133,9 @@ export default function SearchSelectField({
       onChange,
       menuPortalTarget: document.body,
       menuPosition: 'fixed',
+      isLoading: isLoading,
+      loadingMessage: () => loadingMessage,
+      isDisabled,
     };
 
     if (isCreatable && loadOptions) {
