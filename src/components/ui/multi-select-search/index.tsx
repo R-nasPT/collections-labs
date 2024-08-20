@@ -21,7 +21,8 @@ interface SearchSelectFieldProps {
   value?: Option;
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
-  padding?: string; // เพิ่ม prop สำหรับ padding
+  padding?: string;
+  rounded?: string;
   showArrow?: boolean;
   clearIndicator?: boolean;
   isCreatable?: boolean;
@@ -39,8 +40,9 @@ export default function SearchSelectField({
   value,
   defaultValue,
   onChange,
-  padding = "0.25rem 0.5rem", // กำหนดค่าเริ่มต้นสำหรับ padding
-    showArrow = true,
+  padding = "0.25rem 0.5rem",
+  rounded = "1rem",
+  showArrow = true,
   clearIndicator = true,
   isCreatable = false,
   options,
@@ -48,9 +50,9 @@ export default function SearchSelectField({
   onCreateOption
 }: SearchSelectFieldProps) {
   const { ref, toggleOpen, onClose } = useOutsideClick(false);
-  const [hydrated, setHydrated] = React.useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setHydrated(true);
   }, []);
 
@@ -65,14 +67,14 @@ export default function SearchSelectField({
     control: (provided: any, state: any) => ({
       ...provided,
       width: '100%',
-      minWidth: '200px',
+      minWidth: '150px',
       borderColor: errors?.[name] ? "#ff3506" : state.isFocused ? "#531ae3" : "#24075c",
       "&:hover": {
         borderColor: "#531ae3",
       },
       boxShadow: "none",
-      borderRadius: "1rem",
-      padding: padding, // ใช้ padding จาก prop
+      borderRadius: rounded,
+      padding: padding,
     }),
     placeholder: (provided: any) => ({
       ...provided,
@@ -97,11 +99,11 @@ export default function SearchSelectField({
     }),
     menu: (provided: any) => ({
       ...provided,
-      zIndex: 9999, // กำหนด z-index สูงเพื่อให้ dropdown อยู่ด้านบน
+      zIndex: 9999,
     }),
     menuPortal: (base: any) => ({
       ...base,
-      zIndex: 9999, // ใช้ z-index สูงสำหรับ menuPortal
+      zIndex: 9999,
     }),
   };
 
@@ -118,16 +120,16 @@ export default function SearchSelectField({
       value,
       defaultValue: defaultValue,
       onChange,
-      menuPortalTarget: document.body, // ให้ dropdown อยู่ใน root ของ DOM
-      menuPosition: 'fixed', // ใช้ position fixed สำหรับ dropdown
+      menuPortalTarget: document.body,
+      menuPosition: 'fixed',
     };
 
     if (isCreatable && loadOptions) {
-      return <AsyncCreatableSelect {...commonProps} loadOptions={loadOptions} onCreateOption={onCreateOption}/>;
+      return <AsyncCreatableSelect {...commonProps} loadOptions={loadOptions} cacheOptions defaultOptions onCreateOption={onCreateOption}/>;
     } else if (isCreatable) {
       return <CreatableSelect {...commonProps} options={options} onCreateOption={onCreateOption}/>;
     } else if (loadOptions) {
-      return <AsyncSelect {...commonProps} loadOptions={loadOptions} />;
+      return <AsyncSelect {...commonProps} cacheOptions defaultOptions loadOptions={loadOptions} />;
     } else if (options) {
       return <Select {...commonProps} options={options} />;
     }
