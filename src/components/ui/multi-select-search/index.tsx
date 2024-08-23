@@ -128,14 +128,13 @@ export default function SearchSelectField({
       className: "react-select-container",
       classNamePrefix: "react-select",
       isClearable: clearIndicator,
-      value,
       defaultValue: defaultValue,
-      onChange,
       menuPortalTarget: document.body,
       menuPosition: 'fixed',
       isLoading: isLoading,
       loadingMessage: () => loadingMessage,
       isDisabled,
+      ...(field ? field : { value, onChange }),
     };
 
     if (isCreatable && loadOptions) {
