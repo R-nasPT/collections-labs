@@ -47,3 +47,8 @@ const accountOptions = async (inputValue: string) => {
   if (!account) return [];
   return generateOptions(account, inputValue);
 };
+
+const courierOptions = async (inputValue: string) => {
+    if (!couriers) return [];
+    return await generateOptions(couriers, inputValue, undefined, 1000);
+  };
