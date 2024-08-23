@@ -36,3 +36,14 @@ export const generateOptions = async <T extends Record<string, any>>(
     return [];
   }
 };
+
+// -----------------------------------------------------
+const productOptions = async (inputValue: string) => {
+  if (!products) return [];
+  return generateOptions(products, inputValue, { value: 'sku', label: 'productName' });
+};
+
+const accountOptions = async (inputValue: string) => {
+  if (!account) return [];
+  return generateOptions(account, inputValue);
+};
