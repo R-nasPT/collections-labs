@@ -47,3 +47,13 @@ export const formatDateShort = (date: Date, localeCode: string): string => {
     return format(date, "d MMM yyyy", { locale: enUS });
   }
 };
+
+export const formatTime = (date: Date, localeCode: string): string => {
+  if (localeCode === "th") {
+    // สำหรับภาษาไทย ใช้รูปแบบ 24 ชั่วโมงและเพิ่ม "น." หลังเวลา
+    return format(date, "HH:mm 'น.'", { locale: th });
+  } else {
+    // สำหรับภาษาอังกฤษ ใช้รูปแบบ 24 ชั่วโมง
+    return format(date, "HH:mm 'hrs.'", { locale: enUS });
+  }
+};
