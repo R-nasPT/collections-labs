@@ -2,27 +2,40 @@
 
 import { Link, usePathname } from "@/navigation";
 import { useSearchParams } from "next/navigation";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward } from "@/libs/icons";
+import { useState } from "react";
 
 interface PaginationProps {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   total: number;
+  onPerPageChange: (newPerPage: number) => void;
 }
 
-export default function Pagination({ hasNextPage, hasPrevPage, total }: PaginationProps) {
+export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageChange  }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  
   const page = Number(searchParams.get("page") ?? "1");
   const per_page = Number(searchParams.get("per_page") ?? "10");
+
+  const [localPerPage, setLocalPerPage] = useState(per_page);
 
   const totalPages = Math.ceil(total / per_page);
   const start = (page - 1) * per_page + 1;
   const end = Math.min(page * per_page, total);
 
-  const prevPageUrl = `${pathname}?page=${page - 1}&per_page=${per_page}`;
-  const nextPageUrl = `${pathname}?page=${page + 1}&per_page=${per_page}`;
+  const createPageUrl = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", pageNum.toString());
+    return `${pathname}?${params.toString()}`;
+  };
+
+  const handlePerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPerPage = Number(event.target.value);
+    setLocalPerPage(newPerPage);
+    onPerPageChange(newPerPage);
+  };
 
   const renderPageNumbers = () => {
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -39,7 +52,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
           return (
             <Link
               key={i}
-              href={`${pathname}?page=${i}&per_page=${per_page}`}
+              href={createPageUrl(i)}
               aria-current={page === i ? "page" : undefined}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                 page === i
@@ -74,7 +87,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
         {/* --- Mobile --- */}
         <div className="flex flex-1 justify-between items-center sm:hidden">
           <Link
-            href={prevPageUrl}
+            href={createPageUrl(page - 1)}
             className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasPrevPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -90,7 +103,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
             </p>
           </div>
           <Link
-            href={nextPageUrl}
+            href={createPageUrl(page + 1)}
             className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasNextPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -108,13 +121,26 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
               <span className="font-medium">{total}</span> results
             </p>
           </div>
+          <div className="flex items-center">
+            <span className="mr-2 text-sm text-gray-700">Items per page:</span>
+            <select
+              value={localPerPage}
+              onChange={handlePerPageChange}
+              className="rounded-md border border-gray-300 text-sm p-1 cursor-pointer"
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
           <div>
             <nav
               aria-label="Pagination"
               className="isolate inline-flex -space-x-px rounded-md shadow-sm"
             >
               <Link
-                href={prevPageUrl}
+                href={createPageUrl(page - 1)}
                 className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasPrevPage ? "pointer-events-none opacity-50" : ""
                 }`}
@@ -126,7 +152,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total }: Paginati
               {renderPageNumbers()}
 
               <Link
-                href={nextPageUrl}
+                href={createPageUrl(page + 1)}
                 className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasNextPage ? "pointer-events-none opacity-50" : ""
                 }`}
