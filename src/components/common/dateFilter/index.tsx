@@ -6,7 +6,7 @@ interface DateFilterProps {
   onDateChange: (dates: [Date | null, Date | null]) => void;
   startDate?: Date | null;
   endDate?: Date | null;
-  useSearchParams?: boolean;
+  enableSearchParams?: boolean;
   rounded?: "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
 }
 type DateValueType = { startDate: Date | null; endDate: Date | null } | null;
@@ -15,7 +15,7 @@ export default function DateFilter({
   onDateChange,
   startDate: propStartDate,
   endDate: propEndDate,
-  useSearchParams: shouldUseSearchParams = false,
+  enableSearchParams = false,
   rounded,
 }: DateFilterProps) {
   const locale = useLocale();
@@ -24,7 +24,7 @@ export default function DateFilter({
   let startDate = propStartDate ?? null;
   let endDate = propEndDate ?? null;
 
-  if (shouldUseSearchParams) {
+  if (enableSearchParams) {
     const startDateParam = searchParams.get("startDate");
     const endDateParam = searchParams.get("endDate");
     startDate = startDateParam ? new Date(startDateParam) : null;
