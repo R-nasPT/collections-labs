@@ -53,10 +53,11 @@ export default function InputField({
         className={cn(
           "absolute top-[18%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
-          labelClassName,
+          labelClassName, //<-- ต้องให้มันอยู่ใต้ tailwind เลย ถ้ามันอยู่ใต้เงื่อนไข style มันจะเละ
           isFilled && "-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
           error ? "text-[#fa8383] peer-focus:text-[#ff0606]" : "text-gray-400 peer-focus:text-[#531ae3]",
+          labelClassName, //<-- ไว้ตรงนี้จะเละทันที
         )}
       >
         {placeholder}
