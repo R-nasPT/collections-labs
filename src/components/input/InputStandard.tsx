@@ -99,3 +99,17 @@ export default function Form() {
     </form>
   );
 }
+
+function Form() {
+  const [email, setEmail] = useState("");
+
+  return (
+    <InputField
+      name="email"
+      placeholder="Email"
+      value={email}
+      onChange={(value) => setEmail(value)}
+      error={email.length === 0 ? "Email is required" : ""}
+    />
+  );
+}
