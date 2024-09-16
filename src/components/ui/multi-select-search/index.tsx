@@ -5,7 +5,7 @@ import CreatableSelect from "react-select/creatable"
 import { useEffect, useState } from "react";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { useOutsideClick } from "@/hooks";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils";
 
 interface Option {
   value: string;
@@ -88,10 +88,10 @@ export default function SearchSelectField({
     }),
     option: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: state.isSelected ? "#8761d3" : state.isFocused ? "#f3f4f6" : "white",
+      backgroundColor: state.isSelected ? "#c084fc" : state.isFocused ? "#f3f4f6" : "white",
       color: state.isSelected ? "white" : "#280d5f",
       "&:hover": {
-        backgroundColor: state.isSelected ? "#794fcc" : "#f3f4f6",
+        backgroundColor: state.isSelected ? "#b978fa" : "#f3f4f6",
         color: state.isSelected ? "white" : "#280d5f",
       },
     }),
@@ -163,9 +163,9 @@ export default function SearchSelectField({
         renderSelect()
       )}
 
-      {errors?.[name] && (
-        <p className="text-[#ff3506] text-xs h-1 pl-2 mt-1">
-          {`${placeholder.toLowerCase()} is a required field`}
+      {control && (
+        <p className="text-[#ff3506] text-xs h-5 pl-3 mt-1">
+          {errors?.[name] && errors?.[name].message as string | undefined}
         </p>
       )}
     </div>
