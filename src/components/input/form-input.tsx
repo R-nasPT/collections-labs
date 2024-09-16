@@ -55,7 +55,7 @@ export default function FormInput({
           className
         )}
         type={type}
-        onWheel={handleNoScroll}
+        onWheel={type === "number" ? handleNoScroll : undefined}
         {...register(name)}
       />
 
@@ -75,7 +75,7 @@ export default function FormInput({
         {placeholder}
       </label>
 
-      <p className="text-[#ff3506] text-xs h-5 pl-3">
+      <p className="text-[#ff3506] text-xs h-5 pl-3 mt-1">
         {errors?.[name] && (errors?.[name]?.message as string | undefined)}
       </p>
     </div>
