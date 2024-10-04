@@ -14,12 +14,14 @@ interface InputSelectProps {
   options: Option[];
   className?: string;
   wrapperClassName?: string;
+  placeholder?: string; 
 }
 
 export default function InputSelect({
   options,
   className,
   wrapperClassName,
+  placeholder = "Select an option"
 }: InputSelectProps) {
   const { ref, isOpen, toggleOpen, onClose } = useOutsideClick(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
@@ -38,7 +40,7 @@ export default function InputSelect({
         )}
         onClick={toggleOpen}
       >
-        <span>{selectedOption ? selectedOption.label : "เลือกตัวเลือก"}</span>
+        <span>{selectedOption ? selectedOption.label : placeholder}</span>
         <MdKeyboardArrowDown
           className={`w-5 h-5 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -51,7 +53,7 @@ export default function InputSelect({
           isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
         )}
       >
-        <ul>
+        <ul className="max-h-60 overflow-y-auto">
           {options.map((option) => (
             <li
               key={option.value}
