@@ -1,44 +1,73 @@
+"use client";
+
+import { useOutsideClick } from "@/hooks";
+import { cn } from "@/utils";
+import { useState } from "react";
+import { MdKeyboardArrowDown } from "@/libs/icons";
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface InputSelectProps {
+  options: Option[];
+  className?: string;
+  wrapperClassName?: string;
+}
+
 export default function InputSelect({
-  label,
   options,
-  register,
-  errors,
-  required = false,
-}: any) {
+  className,
+  wrapperClassName,
+}: InputSelectProps) {
+  const { ref, isOpen, toggleOpen, onClose } = useOutsideClick(false);
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+
+  const handleOptionClick = (option: Option) => {
+    setSelectedOption(option);
+    onClose();
+  };
+
   return (
-    <>
-      <div className="relative">
-        <select
-          required
-          {...register(label, { required })}
-          className={`peer py-4 px-3 rounded-lg text-base border border-solid ${
-            errors?.[label]
-              ? "border-[#ff3506] focus:outline-[#ff3506]"
-              : "border-[#bfc0c2] hover:border-black focus:outline-black"
+    <div className={cn("relative w-64", wrapperClassName)} ref={ref}>
+      <button
+        className={cn(
+          "w-full p-2 bg-white border border-gray-300 rounded-md shadow-sm flex items-center justify-between hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500",
+          className
+        )}
+        onClick={toggleOpen}
+      >
+        <span>{selectedOption ? selectedOption.label : "เลือกตัวเลือก"}</span>
+        <MdKeyboardArrowDown
+          className={`w-5 h-5 transition-transform ${
+            isOpen ? "rotate-180" : ""
           }`}
-        >
-            <option selected disabled value=""></option>
-          {options.map((option: any) => (
-            <option key={option.value} value={option.value}>
+        />
+      </button>
+      <div
+        className={cn(
+          "absolute z-10 w-full mt-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)] rounded-md transition-all duration-300 ease-in-out overflow-hidden",
+          isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+        )}
+      >
+        <ul>
+          {options.map((option) => (
+            <li
+              key={option.value}
+              className={cn(
+                "px-4 py-2 cursor-pointer transition-colors duration-200",
+                selectedOption?.value === option.value
+                  ? "bg-[#f0e9fc] hover:bg-[#e4dafb]"
+                  : "hover:bg-gray-100"
+              )}
+              onClick={() => handleOptionClick(option)}
+            >
               {option.label}
-            </option>
+            </li>
           ))}
-        </select>
-
-        <label
-          className={`peer-floating peer-focus:font-medium ${
-            errors?.[label]
-              ? "text-[#ff3000]"
-              : "text-gray-800 peer-focus:text-white peer-valid:text-white"
-          }`}
-        >
-          {label}
-        </label>
-
-        <p className="text-[#ff3506] text-xs h-1 pl-2">
-          {errors?.[label] && `${label.toLowerCase()} is a required field`}
-        </p>
+        </ul>
       </div>
-    </>
+    </div>
   );
 }
