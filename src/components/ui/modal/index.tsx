@@ -18,10 +18,10 @@ export default function Modal({ children }: ModalProps) {
   }, []);
   
   const handleClose = () => {
+    setOpen(false);
     setTimeout(() => {
-      setOpen(false);
       router.back();
-    }, 50);
+    }, 300);
   };
   
   return (
