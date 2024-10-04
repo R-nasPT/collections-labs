@@ -12,22 +12,26 @@ interface Option {
 
 interface InputSelectProps {
   options: Option[];
+  onChange: (option: Option) => void;
   className?: string;
   wrapperClassName?: string;
-  placeholder?: string; 
+  placeholder?: string;
+  defaultValue?: string;
 }
 
 export default function InputSelect({
   options,
+  onChange,
   className,
   wrapperClassName,
-  placeholder = "Select an option"
+  placeholder = "Select an option",
+  defaultValue = "",
 }: InputSelectProps) {
   const { ref, isOpen, toggleOpen, onClose } = useOutsideClick(false);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const selectedOption = options.find(option => option.value === defaultValue) || null;
 
   const handleOptionClick = (option: Option) => {
-    setSelectedOption(option);
+    onChange(option);
     onClose();
   };
 
