@@ -88,7 +88,7 @@ export default function InputSelect({
         className={cn(
           "absolute z-10 w-full mt-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.3)] rounded-md transition-all duration-300 ease-in-out overflow-hidden",
           textSizeClass,
-          isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+          isOpen ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0 pointer-events-none"
         )}
       >
         <ul className="max-h-60 overflow-y-auto">
