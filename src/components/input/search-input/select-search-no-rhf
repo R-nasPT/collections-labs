@@ -5,6 +5,8 @@ import { cn } from "@/utils";
 import { useEffect, useRef, useState } from "react";
 import { MdKeyboardArrowDown } from "@/libs/icons";
 import { MdClose, MdSearch } from "react-icons/md";
+import ClearInputIcon from "@/assets/icons/ClearInputIcon";
+import DropdownIcon from "@/assets/icons/DropdownIcon";
 
 interface Option {
   value: string;
@@ -101,7 +103,12 @@ export default function InputSelect({
     }
   };
 
-  const showCreateOption = isCreatable && searchTerm && !filteredOptions.some((option) => option.label.toLowerCase() === searchTerm.toLowerCase());
+  const showCreateOption =
+    isCreatable &&
+    searchTerm &&
+    !filteredOptions.some(
+      (option) => option.label.toLowerCase() === searchTerm.toLowerCase()
+    );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen) {
@@ -144,7 +151,9 @@ export default function InputSelect({
 
   useEffect(() => {
     if (isOpen && listRef.current && focusedIndex >= 0) {
-      const focusedElement = listRef.current.children[focusedIndex] as HTMLElement;
+      const focusedElement = listRef.current.children[
+        focusedIndex
+      ] as HTMLElement;
       if (focusedElement) {
         focusedElement.scrollIntoView({ block: "nearest" });
       }
@@ -176,7 +185,14 @@ export default function InputSelect({
 
   return (
     <div className={cn("relative w-64", wrapperClassName)} ref={ref}>
-      <div className="relative">
+      <div
+        className={cn(
+          "relative flex pl-2.5 text-[#280d5f] border rounded-lg shadow-sm hover:border-[#531ae3] min-h-[30px]",
+          "transition-colors duration-300",
+          isFocused ? "border-[#531ae3]" : "border-[#24075c]"
+        )}
+        onClick={() => inputRef.current?.focus()}
+      >
         <input
           id="input-select"
           ref={inputRef}
@@ -187,19 +203,41 @@ export default function InputSelect({
           onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           className={cn(
-            "w-full p-2 pl-2 pr-8 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500",
+            "flex-1 bg-transparent focus:outline-none",
             textSizeClass,
             className
           )}
         />
-        {(searchTerm || selectedOption) && (
+        <div className="flex items-center">
+          {(searchTerm || selectedOption) && (
+            <button
+              onClick={handleClearInput}
+              type="button"
+              className={cn(
+                "flex items-center p-2",
+                "transition-colors duration-200",
+                isFocused
+                  ? "text-purple-700 hover:text-purple-900"
+                  : "text-gray-300 hover:text-gray-400"
+              )}
+            >
+              <ClearInputIcon />
+            </button>
+          )}
+          <span className="h-5 border-l-[1.5px] border-gray-300"></span>
           <button
-            onClick={handleClearInput}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            type="button"
+            className={cn(
+              "flex items-center p-2",
+              "transition-colors duration-200",
+              isFocused
+                ? "text-purple-700 hover:text-purple-900"
+                : "text-gray-300 hover:text-gray-400"
+            )}
           >
-            <MdClose />
+            <DropdownIcon />
           </button>
-        )}
+        </div>
         {!searchTerm && selectedOption && (
           <label
             htmlFor="input-select"
@@ -235,7 +273,10 @@ export default function InputSelect({
                 selectedOption?.value === option.value
                   ? "bg-[#f0e9fc] hover:bg-[#e4dafb]"
                   : "hover:bg-gray-100",
-                focusedIndex === index && "bg-gray-100"
+                focusedIndex === index &&
+                  (selectedOption?.value === option.value
+                    ? "bg-[#e4dafb]"
+                    : "bg-gray-100")
               )}
               onClick={() => handleOptionClick(option)}
             >
