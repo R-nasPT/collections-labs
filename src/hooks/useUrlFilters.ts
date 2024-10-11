@@ -8,13 +8,16 @@ interface FilterState {
 
 interface UseUrlFiltersOptions {
   initialFilters: FilterState;
-  updateAllowed?: boolean;
+  constantFilters?: FilterState;
   updateMethod?: "push" | "replace";
+  queryParams?: string[];
+  updateAllowed?: boolean;
 }
 
-const useUrlFilters = ({ initialFilters, updateAllowed = true, updateMethod = "push" }: UseUrlFiltersOptions) => {
+const useUrlFilters = ({ initialFilters, constantFilters = {}, queryParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+    const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
   // รองรับพารามิเตอร์จาก URL: เมื่อเปิดหน้าที่มีพารามิเตอร์ใน URL เช่น ?page=1&category=books, 
   // ตัวกรองจะถูกตั้งค่าเริ่มต้นให้ตรงกับค่าที่อยู่ใน URL ทำให้ค่าที่แสดงใน UI ตรงกับสถานะ URL นั้น ๆ
   //  ช่วยให้ระบบกรองข้อมูลสามารถดึงข้อมูลจาก URL และค่าเริ่มต้นจาก initialFilters ได้พร้อมกัน 
@@ -29,7 +32,7 @@ const [filters, setFilters] = useState<FilterState>(initialFilters);
   
 console.log(Object.fromEntries(searchParams.entries()))
   const updateURL = useCallback(() => { 
-    if (updateAllowed) { // ตรวจสอบว่าการอัปเดต URL ได้รับอนุญาตหรือไม่
+    if (updateAllowed && shouldUpdateUrl) { // ตรวจสอบว่าการอัปเดต URL ได้รับอนุญาตหรือไม่
       const params = new URLSearchParams();
       
       // แบบเก่า จัดรูปแบบไม่ได้
@@ -76,18 +79,20 @@ console.log(Object.fromEntries(searchParams.entries()))
       } else {
         router.push(`?${params.toString()}`, { scroll: false });
       }
+      setShouldUpdateUrl(false);
     }
-  }, [updateAllowed, parameterOrder, filters, updateMethod, router]);
+  }, [updateAllowed, shouldUpdateUrl, queryParams, filters, updateMethod, router]);
 
   const handleFilterChange = useCallback((key: string, value: string | number | null) => {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [key]: value };
-        if (key !== "page" && newFilters.page !== undefined) {
-          newFilters.page = 1;
-        }
-        return newFilters;
+    setFilters((prev) => {
+      const newFilters = { ...prev, [key]: value };
+      Object.entries(constantFilters).forEach(([reqKey, reqValue]) => {
+        newFilters[reqKey] = reqValue;
       });
-    }, []);
+      return newFilters;
+    });
+    setShouldUpdateUrl(true);
+  }, [constantFilters]);
 
   useEffect(() => {
     updateURL();
