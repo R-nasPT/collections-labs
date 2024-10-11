@@ -28,12 +28,45 @@ const useUrlFilters = ({ initialFilters, updateAllowed = true, updateMethod = "p
 const [filters, setFilters] = useState<FilterState>(initialFilters);
   
 console.log(Object.fromEntries(searchParams.entries()))
-  const updateURL = useCallback(() => {
-    if (updateAllowed) {
+  const updateURL = useCallback(() => { 
+    if (updateAllowed) { // ตรวจสอบว่าการอัปเดต URL ได้รับอนุญาตหรือไม่
       const params = new URLSearchParams();
+      // แบบเก่า จัดรูปแบบไม่ได้
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== null && value !== "" && value !== undefined) {
           params.append(key, value.toString());
+        }
+      });
+
+      // ------ จัดรูปแบบได้ -----
+      // แบบที่ 1
+      // สร้างอาร์เรย์คีย์ที่ต้องใช้ในการเพิ่มพารามิเตอร์
+      const keysToUse = parameterOrder.length > 0 ? parameterOrder : Object.keys(filters);
+
+      // เพิ่มพารามิเตอร์ทั้งหมดในลูปเดียว
+      keysToUse.forEach((key) => {
+        const value = filters[key];
+        if (value !== null && value !== "" && value !== undefined) {
+          params.append(key, value.toString());
+        }
+      });
+
+      // แบบที่ 2
+      // ฟังก์ชันเพิ่มพารามิเตอร์ใน URL
+      const addParameter = (key: string) => {
+        const value = filters[key];
+        if (value !== null && value !== "" && value !== undefined) {
+          params.append(key, value.toString()); // แปลงค่าเป็นสตริงและเพิ่มใน URL
+        }
+      };
+
+      // เพิ่มพารามิเตอร์ตามลำดับที่กำหนด
+      parameterOrder.forEach(addParameter);
+
+      // เพิ่มพารามิเตอร์ที่เหลืออยู่ที่ไม่ได้อยู่ในลำดับที่กำหนด
+      Object.keys(filters).forEach(key => {
+        if (!parameterOrder.includes(key)) {
+          addParameter(key); // เพิ่มพารามิเตอร์ที่เหลือเข้าไปใน URL
         }
       });
 
@@ -43,7 +76,7 @@ console.log(Object.fromEntries(searchParams.entries()))
         router.push(`?${params.toString()}`, { scroll: false });
       }
     }
-  }, [updateAllowed, filters, updateMethod, router]);
+  }, [updateAllowed, parameterOrder, filters, updateMethod, router]);
 
   const handleFilterChange = useCallback((key: string, value: string | number | null) => {
       setFilters((prev) => {
