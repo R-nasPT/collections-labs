@@ -31,6 +31,7 @@ console.log(Object.fromEntries(searchParams.entries()))
   const updateURL = useCallback(() => { 
     if (updateAllowed) { // ตรวจสอบว่าการอัปเดต URL ได้รับอนุญาตหรือไม่
       const params = new URLSearchParams();
+      
       // แบบเก่า จัดรูปแบบไม่ได้
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== null && value !== "" && value !== undefined) {
