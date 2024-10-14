@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 
 interface ModalProps {
   children: React.ReactNode;
+  backUrl?: string;
 }
 
-export default function Modal({ children }: ModalProps) {
+export default function Modal({ children, backUrl }: ModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -16,24 +17,28 @@ export default function Modal({ children }: ModalProps) {
     const timer = setTimeout(() => setOpen(true), 50);
     return () => clearTimeout(timer);
   }, []);
-  
+
   const handleClose = () => {
     setOpen(false);
     setTimeout(() => {
-      router.back();
+      if (backUrl) {
+        router.push(backUrl);
+      } else {
+        router.back();
+      }
     }, 300);
   };
-  
+
   return (
     <div
       className={cn(
-        "fixed z-[100] inset-0 flex justify-center items-center transition-colors w-screen bg-black/30 backdrop-blur-[2px]",
+        "fixed z-[100] inset-0 flex justify-center items-center transition-colors w-screen bg-black/30 backdrop-blur-[2px]"
       )}
       onClick={handleClose}
     >
       <section
         className={cn(
-          "flex justify-center items-center transition-all",
+          "relative flex justify-center items-center transition-all",
           open ? "scale-90 lg:scale-150 opacity-100" : "scale-[2] opacity-0"
         )}
         onClick={(e) => e.stopPropagation()}
