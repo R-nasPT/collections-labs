@@ -2,13 +2,11 @@ import { useRouter } from "@/navigation";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 
-type FilterValue = string | number | null | undefined;
-
 type FilterState<T> = {
-  [K in keyof T]: T[K] extends FilterValue ? T[K] : never;
+  [K in keyof T]: T[K];
 };
 
-interface UseUrlFiltersOptions<T extends Record<string, FilterValue>> {
+interface UseUrlFiltersOptions<T> {
   initialFilters: FilterState<T>;
   constantFilters?: Partial<FilterState<T>>;
   queryParams?: Array<keyof T>;
@@ -16,7 +14,7 @@ interface UseUrlFiltersOptions<T extends Record<string, FilterValue>> {
   updateAllowed?: boolean;
 }
 
-const useUrlFilters = <T extends Record<string, FilterValue>>({ initialFilters, constantFilters = {}, queryParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions<FilterState<T>>) => {
+const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilters = {}, queryParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions<FilterState<T>>) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
@@ -77,3 +75,40 @@ const useUrlFilters = <T extends Record<string, FilterValue>>({ initialFilters, 
 };
 
 export default useUrlFilters;
+
+// ------- วิธีใช้งาน -----------
+
+interface DeliveryOrdersContentProps {
+  initialFilters: {
+    page: number;
+    per_page: number;
+    search?: string;
+    field?: string;
+    status?: string;
+    startDate?: string | null;
+    endDate?: string | null;
+    merchant?: string;
+  };
+  queryParams: string[]
+}
+
+interface MyFilters {
+  page: number;
+  per_page: number;
+  search?: string;
+  field?: string;
+  status?: string;
+  startDate?: string | undefined;
+  endDate?: string | undefined;
+  merchant?: string;
+}
+
+export default function DeliveryOrdersContent({ initialFilters, queryParams }: DeliveryOrdersContentProps) {
+
+  const isUpdateAllowed = useIsUpdateAllowedPage()
+  const { filters, handleFilterChange } = useUrlFilters({
+    initialFilters,
+    constantFilters: { page: 1 },
+    queryParams,
+    updateAllowed: isUpdateAllowed,
+  } as UseUrlFiltersOptions<MyFilters>);
