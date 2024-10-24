@@ -7,7 +7,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   colorScheme?: 'green' | 'red' | 'purple' | 'cyan' | 'outline-red' | 'outline-green' | 'outline-purple' | 'outline-cyan';
   className?: string;
-  useGrayDisabled?: boolean;
+  useGrayDisabled?: 'filled' | 'outline' | false;
 }
 
 function Button({
@@ -26,9 +26,9 @@ function Button({
     green: "bg-green-500 enabled:hover:bg-green-600 text-white",
     purple: "bg-[#6134bd] enabled:hover:bg-[#794cd3] text-white",
     cyan: "bg-[#1fc7d4] enabled:hover:bg-[#2ea5ad] text-white",
-    'outline-red': "text-red-500 border border-red-500 enabled:hover:bg-red-100",
-    'outline-green': "text-green-500 border border-green-500 enabled:hover:bg-green-100",
-    'outline-purple': "text-[#7645d9] border border-[#7645d9] enabled:hover:bg-purple-100",
+    'outline-red': "text-[#d32f2f] border border-[#d32f2f] enabled:hover:bg-[#faf1f1]",
+    'outline-green': "text-green-600 border border-green-600 enabled:hover:bg-green-50",
+    'outline-purple': "text-[#7645d9] border border-[#7645d9] enabled:hover:bg-purple-50",
     'outline-cyan': "border border-[#1fc7d4] text-[#1fc7d4] enabled:hover:bg-[#e6fafb]",
   };
 
@@ -43,12 +43,15 @@ function Button({
     'outline-cyan': "text-[#a7e8ed] border-[#a7e8ed]",
   };
 
-  const grayDisabledClasses = "bg-[#dedede] text-[#98989a]";
+  const grayDisabledClasses = {
+    filled: "bg-[#dedede] text-[#98989a]",
+    outline: "border border-[#dedede] text-[#c0c0c0]"
+  };
 
   const buttonClasses = cn(
     baseClasses,
-    colorSchemes[colorScheme],
-    disabled && (useGrayDisabled ? grayDisabledClasses : disabledClasses[colorScheme]),
+    (!disabled || !useGrayDisabled) && colorSchemes[colorScheme],
+    disabled && (useGrayDisabled ? grayDisabledClasses[useGrayDisabled] : disabledClasses[colorScheme]),
     disabled && !useGrayDisabled && "opacity-50",
     disabled && "cursor-not-allowed",
     className
