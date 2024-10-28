@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, InputHTMLAttributes } from "react";
 import { cn } from "@/utils";
 import { useNoScroll } from "@/hooks";
 
-interface InputFieldProps {
+interface InputFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   name: string;
   placeholder: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   error?: string;
-  wrapperStyles?: string;
+  wrapperClassName?: string;
   className?: string;
   labelClassName?: string;
 }
@@ -23,9 +23,10 @@ export default function InputField({
   onChange,
   type = "text",
   error,
-  wrapperStyles,
+  wrapperClassName,
   className,
   labelClassName,
+  ...restProps
 }: InputFieldProps) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
@@ -34,12 +35,8 @@ export default function InputField({
     setIsFilled(!!value);
   }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
-  };
-
   return (
-    <div className={cn("relative", wrapperStyles)}>
+    <div className={cn("relative", wrapperClassName)}>
       <input
         id={name}
         className={cn(
@@ -52,13 +49,14 @@ export default function InputField({
         type={type}
         value={value}
         onWheel={type === "number" ? handleNoScroll : undefined}
-        onChange={handleChange}
+        onChange={onChange}
+        {...restProps}
       />
 
       <label
         htmlFor={name}
         className={cn(
-          "absolute top-[18%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
+          "absolute top-[25%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
           labelClassName,
           isFilled && "-top-2 text-xs",
