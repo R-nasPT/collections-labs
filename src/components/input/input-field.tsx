@@ -9,7 +9,7 @@ interface InputFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'o
   placeholder: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
+  type?: "text" | "search" | "tel" | "url" | "email" | "number";
   error?: string;
   wrapperClassName?: string;
   className?: string;
