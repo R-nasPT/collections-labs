@@ -31,9 +31,18 @@ export default function Switch({
   size = "md",
   onChange,
   disabled = false,
+  color = "purple",
   id = "switch-component",
   defaultChecked = false,
 }: SwitchProps) {
+  const colorMap = {
+    purple: "checked:bg-purple-600 peer-checked:border-purple-600",
+    blue: "checked:bg-blue-600 peer-checked:border-blue-600",
+    green: "checked:bg-green-600 peer-checked:border-green-600",
+    red: "checked:bg-red-600 peer-checked:border-red-600",
+  };
+
+  const selectedColor = colorMap[color as keyof typeof colorMap] || colorMap.purple;
   const config = sizeConfig[size];
 
   return (
@@ -50,7 +59,8 @@ export default function Switch({
           type="checkbox"
           className={cn(
             "absolute w-8 h-4 transition-smooth rounded-full appearance-none cursor-pointer",
-            "peer bg-[#cfd8dc] checked:bg-purple-600 peer-checked:border-purple-600",
+            "peer bg-[#cfd8dc]",
+            selectedColor,
             config.switch,
             disabled && "cursor-not-allowed"
           )}
