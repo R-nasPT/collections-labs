@@ -5,7 +5,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   children: ReactNode;
-  colorScheme?: 'green' | 'red' | 'purple' | 'cyan' | 'outline-red' | 'outline-green' | 'outline-purple' | 'outline-cyan';
+  colorScheme?: 'green' | 'red' | 'purple' | 'cyan' | 'gray' | 'outline-red' | 'outline-green' | 'outline-purple' | 'outline-cyan';
   className?: string;
   useGrayDisabled?: 'filled' | 'outline' | false;
 }
@@ -19,13 +19,14 @@ function Button({
   useGrayDisabled = false,
   ...props
 }: ButtonProps) {
-  const baseClasses = "py-1 rounded-md transition-smooth";
+  const baseClasses = "p-1 rounded-md transition-smooth";
 
   const colorSchemes: Record<string, string> = {
-    red: "bg-red-500 enabled:hover:bg-red-600 text-white",
+    red: "bg-red-600 enabled:hover:bg-red-500 text-white",
     green: "bg-green-500 enabled:hover:bg-green-600 text-white",
     purple: "bg-[#6134bd] enabled:hover:bg-[#794cd3] text-white",
     cyan: "bg-[#1fc7d4] enabled:hover:bg-[#2ea5ad] text-white",
+    gray: "bg-gray-100 enabled:hover:bg-gray-200 text-gray-700",
     'outline-red': "text-[#d32f2f] border border-[#d32f2f] enabled:hover:bg-[#faf1f1]",
     'outline-green': "text-green-600 border border-green-600 enabled:hover:bg-green-50",
     'outline-purple': "text-[#7645d9] border border-[#7645d9] enabled:hover:bg-purple-50",
@@ -37,6 +38,7 @@ function Button({
     green: "bg-green-300",
     purple: "bg-[#9a7bd1]",
     cyan: "bg-[#a7e8ed]",
+    gray: "bg-gray-50 text-gray-500",
     'outline-red': "text-red-300 border-red-300",
     'outline-green': "text-green-300 border-green-300",
     'outline-purple': "text-[#bca7e6] border-[#e4d7ff]",
