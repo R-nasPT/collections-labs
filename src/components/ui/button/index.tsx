@@ -22,7 +22,7 @@ function Button({
   const baseClasses = "p-1 rounded-md transition-smooth";
 
   const colorSchemes: Record<string, string> = {
-    red: "bg-red-600 enabled:hover:bg-red-500 text-white",
+    red: "bg-red-500 enabled:hover:bg-red-600 text-white",
     green: "bg-green-500 enabled:hover:bg-green-600 text-white",
     purple: "bg-[#6134bd] enabled:hover:bg-[#794cd3] text-white",
     cyan: "bg-[#1fc7d4] enabled:hover:bg-[#2ea5ad] text-white",
