@@ -9,12 +9,12 @@ type FilterState<T> = {
 interface UseUrlFiltersOptions<T> {
   initialFilters: FilterState<T>;
   constantFilters?: Partial<FilterState<T>>;
-  queryParams?: Array<keyof T>;
+  sortParams?: Array<keyof T>;
   updateMethod?: "push" | "replace";
   updateAllowed?: boolean;
 }
 
-const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilters = {}, queryParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions<FilterState<T>>) => {
+const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilters = {}, sortParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions<FilterState<T>>) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
@@ -34,10 +34,10 @@ const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilte
         }
       };
 
-      (queryParams as Array<keyof T>).forEach(addParameter);
+      (sortParams as Array<keyof T>).forEach(addParameter);
 
       (Object.keys(filters) as Array<keyof T>).forEach((key) => {
-        if (!queryParams.includes(key)) {
+        if (!sortParams.includes(key)) {
           addParameter(key);
         }
       });
@@ -49,7 +49,7 @@ const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilte
       }
       setShouldUpdateUrl(false);
     }
-  }, [updateAllowed, shouldUpdateUrl, queryParams, filters, updateMethod, router]);
+  }, [updateAllowed, shouldUpdateUrl, sortParams, filters, updateMethod, router]);
 
   const handleFilterChange = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
     setFilters((prev) => {
@@ -89,7 +89,7 @@ interface DeliveryOrdersContentProps {
     endDate?: string | null;
     merchant?: string;
   };
-  queryParams: string[]
+  sortParams: string[]
 }
 
 interface MyFilters {
@@ -103,12 +103,12 @@ interface MyFilters {
   merchant?: string;
 }
 
-export default function DeliveryOrdersContent({ initialFilters, queryParams }: DeliveryOrdersContentProps) {
+export default function DeliveryOrdersContent({ initialFilters, sortParams }: DeliveryOrdersContentProps) {
 
   const isUpdateAllowed = useIsUpdateAllowedPage()
   const { filters, handleFilterChange } = useUrlFilters({
     initialFilters,
     constantFilters: { page: 1 },
-    queryParams,
+    sortParams,
     updateAllowed: isUpdateAllowed,
   } as UseUrlFiltersOptions<MyFilters>);
