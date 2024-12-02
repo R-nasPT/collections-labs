@@ -27,7 +27,7 @@ export default function Accordion({
         onClick={() => setOpen(!open)}
         type="button"
       >
-        <div>{title}</div>
+        <>{title}</>
         {text && <p>{text}</p>}
         {arrow && <ArrowIcon open={open} />}
         {plus && <PlusIcon open={open} />}
