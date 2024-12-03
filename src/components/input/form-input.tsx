@@ -1,11 +1,8 @@
+"use client";
+
 import { useNoScroll } from "@/hooks";
 import { useEffect, useState } from "react";
-import {
-  Control,
-  FieldErrors,
-  UseFormRegister,
-  useWatch,
-} from "react-hook-form";
+import { Control, FieldErrors, UseFormRegister, useWatch } from "react-hook-form";
 import { cn } from "@/utils";
 
 interface FormValues {
@@ -20,8 +17,9 @@ interface FormInputProps {
   control: Control<FormValues>;
   type?: string;
   className?: string;
-  labelClassName?: string;
-  wrapperStyles?: string;
+  wrapperClassName?: string;
+  top?: number;
+  left?: number;
 }
 
 export default function FormInput({
@@ -32,8 +30,9 @@ export default function FormInput({
   errors,
   control,
   className,
-  labelClassName,
-  wrapperStyles,
+  wrapperClassName,
+  top = 18,
+  left = 5,
 }: FormInputProps) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
@@ -44,7 +43,7 @@ export default function FormInput({
   }, [fieldValue]);
 
   return (
-    <div className={cn("relative", wrapperStyles)}>
+    <div className={cn("relative", wrapperClassName)}>
       <input
         id={name}
         className={cn(
@@ -62,14 +61,11 @@ export default function FormInput({
       <label
         htmlFor={name}
         className={cn(
-          "absolute top-[18%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
+          `absolute top-[${top}%] left-${left} px-1 bg-white rounded-full transition-all duration-300 italic`,
           "peer-focus:-top-2 peer-focus:text-xs",
-          labelClassName,
           isFilled && "-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
-          errors?.[name]
-            ? "text-[#fa8383] peer-focus:text-[#ff0606]"
-            : "text-gray-400 peer-focus:text-[#531ae3]"
+          errors?.[name] ? "text-[#fa8383] peer-focus:text-[#ff0606]" : "text-gray-400 peer-focus:text-[#531ae3]"
         )}
       >
         {placeholder}
