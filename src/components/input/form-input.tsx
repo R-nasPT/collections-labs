@@ -5,28 +5,29 @@ import { useEffect, useState } from "react";
 import {
   Control,
   FieldErrors,
+  Path,
   UseFormRegister,
   useWatch,
 } from "react-hook-form";
 import { cn } from "@/utils";
 
 interface FormValues {
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 }
 
-interface FormInputProps {
-  name: string;
+interface FormInputProps<T extends FormValues> {
+  name: Path<T>;
   placeholder: string;
-  register: UseFormRegister<FormValues>;
-  errors: FieldErrors<FormValues>;
-  control: Control<FormValues>;
-  type?: string;
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
+  control: Control<T>;
+  type?: 'text' | 'number' | 'email' | 'password' | 'tel';
   className?: string;
   labelClassName?: string;
   wrapperClassName?: string;
 }
 
-export default function FormInput({
+export default function FormInput<T extends FormValues>({
   name,
   placeholder,
   register,
@@ -36,10 +37,10 @@ export default function FormInput({
   className,
   labelClassName,
   wrapperClassName,
-}: FormInputProps) {
+}: FormInputProps<T>) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
-  const fieldValue = useWatch({ name, control });
+  const fieldValue = useWatch<T>({ name, control });
 
   useEffect(() => {
     setIsFilled(!!fieldValue);
@@ -48,7 +49,7 @@ export default function FormInput({
   return (
     <div className={cn("relative", wrapperClassName)}>
       <input
-        id={name}
+        id={String(name)}
         className={cn(
           "peer py-3 pl-5 rounded-2xl w-full text-base border rm-arrow-spin",
           errors?.[name]
@@ -62,7 +63,7 @@ export default function FormInput({
       />
 
       <label
-        htmlFor={name}
+        htmlFor={String(name)}
         className={cn(
           "absolute top-[18%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
