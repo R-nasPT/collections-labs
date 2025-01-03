@@ -5,6 +5,16 @@ const DateValueSchema = z.object({
   endDate: z.union([z.date(), z.null()]),
 });
 
+// ------ Allows null or undefined ------
+const DateValueSchema = z.object({
+  startDate: z.date().nullable().optional(),
+  endDate: z.date().nullable().optional(),
+});
+
+export const AdviceUpdateSchema = z.object({
+  dateSingle: DateValueSchema.optional()
+});
+
 // ------ perfect ------
 const DateValueSchema = z.object({
   startDate: z.date(),
