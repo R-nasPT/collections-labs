@@ -1,23 +1,64 @@
 import React, { useState, useRef } from 'react';
 import { FiUploadCloud, FiFile, FiX } from 'react-icons/fi';
 
+type AcceptedTypes =
+  | "image/*"
+  | "image/jpeg"
+  | "image/png"
+  | "image/gif"
+  | "image/webp"
+  | "image/bmp"
+  | "image/tiff"
+  | "image/svg+xml"
+  | "application/pdf"
+
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
-  maxSize?: number; // in MB
-  acceptedTypes?: string[];
+  maxSize?: number;
+  acceptedTypes?: AcceptedTypes[];
   label?: string;
 }
 
 export default function FileUpload({ 
   onFileSelect, 
-  maxSize = 5, // Default 5MB
+  maxSize = 5,
   acceptedTypes = ['image/*', 'application/pdf'],
-  label = 'Upload File'
+  label
 }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const getAcceptedTypesDisplay = () => {
+    const types: string[] = [];
+    
+    acceptedTypes.forEach(type => {
+      if (type === 'image/*') {
+        types.push('JPEG, PNG, GIF, WebP, BMP, TIFF, SVG, PDF');
+      }
+      else if (type === 'image/svg+xml') {
+        types.push('SVG (Scalable Vector Graphics)');
+      }
+      else if (type.startsWith('image/')) {
+        const format = type.split('/')[1].toUpperCase();
+        if (!types.includes(format)) {
+          types.push(format);
+        }
+      }
+      else if (type === 'application/pdf') {
+        types.push('PDF');
+      }
+      else {
+        const format = type.split('/')[1]?.toUpperCase() || type;
+        if (!types.includes(format)) {
+          types.push(format);
+        }
+      }
+    });
+
+    return types.join(', ');
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -85,9 +126,11 @@ export default function FileUpload({
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
+      {label && (
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {label}
+        </label>
+      )}
       
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 
@@ -121,9 +164,7 @@ export default function FileUpload({
               <span className="text-gray-500"> or drag and drop</span>
             </div>
             <p className="mt-2 text-sm text-gray-500">
-              {acceptedTypes.includes('image/*') ? 'PNG, JPG, GIF' : ''} 
-              {acceptedTypes.includes('application/pdf') ? ' PDF' : ''} 
-              up to {maxSize}MB
+            Accepted files: {getAcceptedTypesDisplay()} (up to {maxSize}MB)
             </p>
           </div>
         ) : (
