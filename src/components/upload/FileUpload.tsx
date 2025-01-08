@@ -1,0 +1,152 @@
+import React, { useState, useRef } from 'react';
+import { FiUploadCloud, FiFile, FiX } from 'react-icons/fi';
+
+interface FileUploadProps {
+  onFileSelect: (file: File) => void;
+  maxSize?: number; // in MB
+  acceptedTypes?: string[];
+  label?: string;
+}
+
+export default function FileUpload({ 
+  onFileSelect, 
+  maxSize = 5, // Default 5MB
+  acceptedTypes = ['image/*', 'application/pdf'],
+  label = 'Upload File'
+}: FileUploadProps) {
+  const [dragActive, setDragActive] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const validateFile = (file: File) => {
+    if (file.size > maxSize * 1024 * 1024) {
+      setError(`File size must be less than ${maxSize}MB`);
+      return false;
+    }
+    
+    if (!acceptedTypes.some(type => {
+      if (type.includes('/*')) {
+        return file.type.startsWith(type.split('/')[0]);
+      }
+      return file.type === type;
+    })) {
+      setError('Invalid file type');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      if (validateFile(droppedFile)) {
+        setFile(droppedFile);
+        onFileSelect(droppedFile);
+        setError('');
+      }
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      if (validateFile(selectedFile)) {
+        setFile(selectedFile);
+        onFileSelect(selectedFile);
+        setError('');
+      }
+    }
+  };
+
+  const handleRemove = () => {
+    setFile(null);
+    setError('');
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label}
+      </label>
+      
+      <div
+        className={`relative border-2 border-dashed rounded-lg p-6 
+          ${dragActive ? 'border-purple-500 bg-purple-50' : 'border-gray-300'}
+          ${error ? 'border-red-500' : ''}
+          transition-colors duration-200`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          className="hidden"
+          onChange={handleChange}
+          accept={acceptedTypes.join(',')}
+        />
+
+        {!file ? (
+          <div className="text-center">
+            <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400" />
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="font-medium text-purple-600 hover:text-purple-500"
+              >
+                Click to upload
+              </button>
+              <span className="text-gray-500"> or drag and drop</span>
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              {acceptedTypes.includes('image/*') ? 'PNG, JPG, GIF' : ''} 
+              {acceptedTypes.includes('application/pdf') ? ' PDF' : ''} 
+              up to {maxSize}MB
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
+            <div className="flex items-center space-x-2">
+              <FiFile className="h-6 w-6 text-purple-600" />
+              <span className="text-sm text-gray-700">{file.name}</span>
+            </div>
+            <button
+              onClick={handleRemove}
+              className="p-1 hover:bg-purple-100 rounded-full transition-colors"
+            >
+              <FiX className="h-5 w-5 text-gray-500" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <p className="mt-2 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
