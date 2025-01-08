@@ -5,17 +5,14 @@ import { useEffect, useState } from "react";
 import {
   Control,
   FieldErrors,
+  FieldValues,
   Path,
   UseFormRegister,
   useWatch,
 } from "react-hook-form";
 import { cn } from "@/utils";
 
-interface FormValues {
-  [key: string]: string | number | boolean | undefined;
-}
-
-interface FormInputProps<T extends FormValues> {
+interface FormInputProps<T extends FieldValues> {
   name: Path<T>;
   placeholder: string;
   register: UseFormRegister<T>;
@@ -24,10 +21,11 @@ interface FormInputProps<T extends FormValues> {
   type?: 'text' | 'number' | 'email' | 'password' | 'tel';
   className?: string;
   labelClassName?: string;
-  wrapperClassName?: string;
+  containerClassName?: string;
+  disabled?: boolean;
 }
 
-export default function FormInput<T extends FormValues>({
+export default function FormInput<T extends FieldValues>({
   name,
   placeholder,
   register,
@@ -36,7 +34,8 @@ export default function FormInput<T extends FormValues>({
   control,
   className,
   labelClassName,
-  wrapperClassName,
+  containerClassName,
+  disabled
 }: FormInputProps<T>) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
@@ -47,17 +46,19 @@ export default function FormInput<T extends FormValues>({
   }, [fieldValue]);
 
   return (
-    <div className={cn("relative", wrapperClassName)}>
+    <div className={cn("relative", containerClassName)}>
       <input
         id={String(name)}
         className={cn(
           "peer py-3 pl-5 rounded-2xl w-full text-base border rm-arrow-spin",
           errors?.[name]
             ? "border-[#ff3506] focus:outline-[#ff3506]"
-            : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-[#280d5f]",
+            : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-midnight-indigo",
+          disabled && "bg-pearl-gray opacity-75 border-[#646464] hover:border-[#646464]",
           className
         )}
         type={type}
+        disabled={disabled}
         onWheel={type === "number" ? handleNoScroll : undefined}
         {...register(name)}
       />
@@ -72,7 +73,8 @@ export default function FormInput<T extends FormValues>({
           "pointer-events-none peer-focus:font-medium",
           errors?.[name]
             ? "text-[#fa8383] peer-focus:text-[#ff0606]"
-            : "text-gray-400 peer-focus:text-[#531ae3]"
+            : "text-gray-400 peer-focus:text-[#531ae3]",
+          disabled && "bg-transparent"
         )}
       >
         {placeholder}
