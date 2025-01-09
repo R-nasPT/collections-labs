@@ -1,7 +1,9 @@
-// DatePickerInput.tsx
+"use client";
+
 import { cn } from "@/utils";
-import { useState } from "react";
-import { useController, Control } from "react-hook-form";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { useController, Control, FieldError, Message } from "react-hook-form";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 interface DatePickerInputProps {
@@ -11,6 +13,11 @@ interface DatePickerInputProps {
   containerClassName?: string;
   wrapperClassName?: string;
   placeholder?: string;
+  disabled?: boolean
+}
+
+interface DatePickerFieldError extends FieldError {
+  startDate: { message: Message };
 }
 
 export default function DatePickerInput({
@@ -19,8 +26,10 @@ export default function DatePickerInput({
   className,
   containerClassName,
   wrapperClassName,
-  placeholder
+  placeholder,
+  disabled,
 }: DatePickerInputProps) {
+  const locale = useLocale();
   const {
     field: { onChange, value },
     fieldState: { error },
@@ -53,6 +62,12 @@ export default function DatePickerInput({
     }
   };
 
+  useEffect(() => {
+    if (value) {
+      setDateValue(value);
+    }
+  }, [value]);
+
   return (
     <div className={cn("w-full", wrapperClassName)}>
       <Datepicker
@@ -61,10 +76,12 @@ export default function DatePickerInput({
         inputName={name}
         value={dateValue}
         onChange={handleDateChange}
+        i18n={locale}
         useRange={false}
         asSingle={true}
         displayFormat="DD/MM/YYYY"
         placeholder={placeholder}
+        disabled={disabled}
         containerClassName={cn(
           "relative",
           error ? "border-red-500" : "border-gray-300",
@@ -78,11 +95,16 @@ export default function DatePickerInput({
           "rounded-2xl tracking-wide font-light bg-white",
           error
             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20 focus:outline-[#ff0606] placeholder-red-400"
-            : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-[#280d5f] placeholder-gray-400",
+            : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-midnight-indigo placeholder-gray-400",
+          disabled && "bg-[#ebebeb] opacity-75 border-[#646464] hover:border-[#646464]",
           className
         )}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error.message}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-red-600">
+          {(error as DatePickerFieldError).startDate.message}
+        </p>
+      )}
     </div>
   );
 }
