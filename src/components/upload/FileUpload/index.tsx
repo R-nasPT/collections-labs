@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { FiUploadCloud, FiFile, FiX } from 'react-icons/fi';
+import { useTranslations } from "next-intl";
+import { useState, useRef } from "react";
+import { FiUploadCloud, FiFile, FiX } from "@/lib/icons";
 
 type AcceptedTypes =
   | "image/*"
@@ -10,54 +11,55 @@ type AcceptedTypes =
   | "image/bmp"
   | "image/tiff"
   | "image/svg+xml"
-  | "application/pdf"
+  | "application/pdf";
+
+type ColorScheme = "blue" | "purple"
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
   maxSize?: number;
   acceptedTypes?: AcceptedTypes[];
   label?: string;
+  color?: ColorScheme
 }
 
-export default function FileUpload({ 
-  onFileSelect, 
+export default function FileUpload({
+  onFileSelect,
   maxSize = 5,
-  acceptedTypes = ['image/*', 'application/pdf'],
-  label
+  acceptedTypes = ["image/*", "application/pdf"],
+  label,
+  color = "purple"
 }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("INDEX");
 
   const getAcceptedTypesDisplay = () => {
     const types: string[] = [];
-    
-    acceptedTypes.forEach(type => {
-      if (type === 'image/*') {
-        types.push('JPEG, PNG, GIF, WebP, BMP, TIFF, SVG, PDF');
-      }
-      else if (type === 'image/svg+xml') {
-        types.push('SVG (Scalable Vector Graphics)');
-      }
-      else if (type.startsWith('image/')) {
-        const format = type.split('/')[1].toUpperCase();
+
+    acceptedTypes.forEach((type) => {
+      if (type === "image/*") {
+        types.push("JPEG, PNG, GIF, WebP, BMP, TIFF, SVG, PDF");
+      } else if (type === "image/svg+xml") {
+        types.push("SVG (Scalable Vector Graphics)");
+      } else if (type.startsWith("image/")) {
+        const format = type.split("/")[1].toUpperCase();
         if (!types.includes(format)) {
           types.push(format);
         }
-      }
-      else if (type === 'application/pdf') {
-        types.push('PDF');
-      }
-      else {
-        const format = type.split('/')[1]?.toUpperCase() || type;
+      } else if (type === "application/pdf") {
+        types.push("PDF");
+      } else {
+        const format = type.split("/")[1]?.toUpperCase() || type;
         if (!types.includes(format)) {
           types.push(format);
         }
       }
     });
 
-    return types.join(', ');
+    return types.join(", ");
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -75,17 +77,19 @@ export default function FileUpload({
       setError(`File size must be less than ${maxSize}MB`);
       return false;
     }
-    
-    if (!acceptedTypes.some(type => {
-      if (type.includes('/*')) {
-        return file.type.startsWith(type.split('/')[0]);
-      }
-      return file.type === type;
-    })) {
-      setError('Invalid file type');
+
+    if (
+      !acceptedTypes.some((type) => {
+        if (type.includes("/*")) {
+          return file.type.startsWith(type.split("/")[0]);
+        }
+        return file.type === type;
+      })
+    ) {
+      setError("Invalid file type");
       return false;
     }
-    
+
     return true;
   };
 
@@ -93,13 +97,13 @@ export default function FileUpload({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (validateFile(droppedFile)) {
         setFile(droppedFile);
         onFileSelect(droppedFile);
-        setError('');
+        setError("");
       }
     }
   };
@@ -111,16 +115,16 @@ export default function FileUpload({
       if (validateFile(selectedFile)) {
         setFile(selectedFile);
         onFileSelect(selectedFile);
-        setError('');
+        setError("");
       }
     }
   };
 
   const handleRemove = () => {
     setFile(null);
-    setError('');
+    setError("");
     if (inputRef.current) {
-      inputRef.current.value = '';
+      inputRef.current.value = "";
     }
   };
 
@@ -131,11 +135,11 @@ export default function FileUpload({
           {label}
         </label>
       )}
-      
+
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 
-          ${dragActive ? 'border-purple-500 bg-purple-50' : 'border-gray-300'}
-          ${error ? 'border-red-500' : ''}
+          ${dragActive ? `border-${color}-500 bg-${color}-50` : "border-gray-300"}
+          ${error ? "border-red-500" : ""}
           transition-colors duration-200`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -147,7 +151,7 @@ export default function FileUpload({
           type="file"
           className="hidden"
           onChange={handleChange}
-          accept={acceptedTypes.join(',')}
+          accept={acceptedTypes.join(",")}
         />
 
         {!file ? (
@@ -157,25 +161,28 @@ export default function FileUpload({
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="font-medium text-purple-600 hover:text-purple-500"
+                className={`font-medium text-${color}-600 hover:text-${color}-500`}
               >
-                Click to upload
+                {t("CLICK_UPLOAD")}
               </button>
-              <span className="text-gray-500"> or drag and drop</span>
+              <span className="text-gray-500"> {t("OR_DRAG_DROP")}</span>
             </div>
             <p className="mt-2 text-sm text-gray-500">
-            Accepted files: {getAcceptedTypesDisplay()} (up to {maxSize}MB)
+              {t("FILE_UPLOAD_ACCEPTED", {
+                types: getAcceptedTypesDisplay(),
+                size: maxSize,
+              })}
             </p>
           </div>
         ) : (
-          <div className="flex items-center justify-between p-2 bg-purple-50 rounded">
+          <div className={`flex items-center justify-between p-2 bg-${color}-50 rounded`}>
             <div className="flex items-center space-x-2">
-              <FiFile className="h-6 w-6 text-purple-600" />
+              <FiFile className={`h-6 w-6 text-${color}-600`} />
               <span className="text-sm text-gray-700">{file.name}</span>
             </div>
             <button
               onClick={handleRemove}
-              className="p-1 hover:bg-purple-100 rounded-full transition-colors"
+              className={`p-1 hover:bg-${color}-100 rounded-full transition-colors`}
             >
               <FiX className="h-5 w-5 text-gray-500" />
             </button>
@@ -183,11 +190,7 @@ export default function FileUpload({
         )}
       </div>
 
-      {error && (
-        <p className="mt-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 }
