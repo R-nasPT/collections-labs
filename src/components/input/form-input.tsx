@@ -18,7 +18,7 @@ interface FormInputProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
   control: Control<T>;
-  type?: 'text' | 'number' | 'email' | 'password' | 'tel';
+  type?: "text" | "number" | "email" | "password" | "tel";
   className?: string;
   labelClassName?: string;
   containerClassName?: string;
@@ -35,7 +35,7 @@ export default function FormInput<T extends FieldValues>({
   className,
   labelClassName,
   containerClassName,
-  disabled
+  disabled,
 }: FormInputProps<T>) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
@@ -54,7 +54,7 @@ export default function FormInput<T extends FieldValues>({
           errors?.[name]
             ? "border-[#ff3506] focus:outline-[#ff3506]"
             : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-midnight-indigo",
-          disabled && "bg-pearl-gray opacity-75 border-[#646464] hover:border-[#646464]",
+          disabled && "bg-[#ebebeb] opacity-75 border-[#646464] hover:border-[#646464]",
           className
         )}
         type={type}
@@ -66,15 +66,18 @@ export default function FormInput<T extends FieldValues>({
       <label
         htmlFor={String(name)}
         className={cn(
-          "absolute top-[18%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
+          "absolute top-[18%] left-5 px-1.5 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
-          labelClassName,
           isFilled && "-top-2 lg:-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
           errors?.[name]
             ? "text-[#fa8383] peer-focus:text-[#ff0606]"
             : "text-gray-400 peer-focus:text-[#531ae3]",
-          disabled && "bg-transparent"
+          disabled &&
+            (isFilled || fieldValue
+              ? "bg-gradient-to-b from-white to-[#ebebeb]"
+              : "bg-[#ebebeb]"),
+          labelClassName
         )}
       >
         {placeholder}
