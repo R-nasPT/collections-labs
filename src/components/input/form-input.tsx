@@ -81,7 +81,6 @@ export default function FormInput<T extends FieldValues>({
         className={cn(
           "absolute top-[18%] left-5 px-1.5 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
-          isFilled && "-top-2 lg:-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
           hasError
             ? "text-[#fa8383] peer-focus:text-[#ff0606]"
@@ -90,7 +89,8 @@ export default function FormInput<T extends FieldValues>({
             (isFilled || fieldValue
               ? "bg-gradient-to-b from-white to-[#ebebeb]"
               : "bg-[#ebebeb]"),
-          labelClassName
+          labelClassName,
+          isFilled && "-top-2 lg:-top-2 text-xs"
         )}
       >
         {placeholder}
