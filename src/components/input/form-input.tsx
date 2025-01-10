@@ -41,6 +41,19 @@ export default function FormInput<T extends FieldValues>({
   const handleNoScroll = useNoScroll();
   const fieldValue = useWatch<T>({ name, control });
 
+  // ใช้ฟังก์ชันเพื่อดึง error message แบบ dynamic
+  const getErrorMessage = (): string | undefined => {
+    if (typeof name === "string") {
+      const error = name.split(".") // แยก path เช่น items.0.putAwayAmount
+        .reduce((error: any, part) => error?.[part], errors);
+      return error?.message as string | undefined;
+    }
+    return errors[name]?.message as string | undefined;
+  };
+
+  const errorMessage = getErrorMessage();
+  const hasError = !!errorMessage;
+
   useEffect(() => {
     setIsFilled(!!fieldValue);
   }, [fieldValue]);
@@ -51,7 +64,7 @@ export default function FormInput<T extends FieldValues>({
         id={String(name)}
         className={cn(
           "peer py-3 pl-5 rounded-2xl w-full text-base border rm-arrow-spin",
-          errors?.[name]
+          hasError
             ? "border-[#ff3506] focus:outline-[#ff3506]"
             : "border-[#24075c] hover:border-[#531ae3] focus:outline-[#531ae3] text-midnight-indigo",
           disabled && "bg-[#ebebeb] opacity-75 border-[#646464] hover:border-[#646464]",
@@ -70,7 +83,7 @@ export default function FormInput<T extends FieldValues>({
           "peer-focus:-top-2 peer-focus:text-xs",
           isFilled && "-top-2 lg:-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
-          errors?.[name]
+          hasError
             ? "text-[#fa8383] peer-focus:text-[#ff0606]"
             : "text-gray-400 peer-focus:text-[#531ae3]",
           disabled &&
@@ -84,7 +97,7 @@ export default function FormInput<T extends FieldValues>({
       </label>
 
       <p className="text-[#ff3506] text-xs h-5 pl-3 mt-1">
-        {errors?.[name] && (errors?.[name]?.message as string | undefined)}
+        {hasError && errorMessage}
       </p>
     </div>
   );
