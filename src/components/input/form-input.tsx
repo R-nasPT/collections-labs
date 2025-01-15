@@ -88,7 +88,7 @@ export default function FormInput<T extends FieldValues>({
           disabled &&
             (isFilled || fieldValue
               ? "bg-gradient-to-b from-white to-[#ebebeb]"
-              : "bg-[#ebebeb]"),
+              : "bg-[#f0f0f0]"),
           labelClassName,
           isFilled && "-top-2 lg:-top-2 text-xs"
         )}
