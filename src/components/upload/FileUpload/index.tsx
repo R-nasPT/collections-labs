@@ -2,6 +2,12 @@ import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 import { FiUploadCloud, FiFile, FiX } from "@/lib/icons";
 
+interface FileUploadResponse {
+  contentType: string;
+  filename: string;
+  link: string;
+}
+
 type AcceptedTypes =
   | "image/*"
   | "image/jpeg"
@@ -16,7 +22,7 @@ type AcceptedTypes =
 type ColorScheme = "blue" | "purple"
 
 interface FileUploadProps {
-  onFileSelect: (file: File) => void;
+  onUploadComplete?: (status: "success" | "error", payload: FileUploadResponse | Error | null) => void;
   maxSize?: number;
   acceptedTypes?: AcceptedTypes[];
   label?: string;
@@ -24,11 +30,11 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({
-  onFileSelect,
+  onUploadComplete,
   maxSize = 5,
   acceptedTypes = ["image/*", "application/pdf"],
   label,
-  color = "purple"
+  color = "purple",
 }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -93,30 +99,35 @@ export default function FileUpload({
     return true;
   };
 
+  const handleFileSelection = async (selectedFile: File) => {
+    if (validateFile(selectedFile)) {
+      setFile(selectedFile);
+      setError("");
+      try {
+        const result = await mutateAsync(selectedFile);
+        onUploadComplete?.("success", result);
+      } catch (error) {
+        setError("Upload failed");
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        onUploadComplete?.("error", error instanceof Error ? error : new Error(errorMessage));
+      }
+    }
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const droppedFile = e.dataTransfer.files[0];
-      if (validateFile(droppedFile)) {
-        setFile(droppedFile);
-        onFileSelect(droppedFile);
-        setError("");
-      }
+      handleFileSelection(e.dataTransfer.files[0]);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      if (validateFile(selectedFile)) {
-        setFile(selectedFile);
-        onFileSelect(selectedFile);
-        setError("");
-      }
+      handleFileSelection(e.target.files[0]);
     }
   };
 
@@ -126,8 +137,9 @@ export default function FileUpload({
     if (inputRef.current) {
       inputRef.current.value = "";
     }
+    onUploadComplete?.("success", null);
   };
-
+  
   return (
     <div className="w-full">
       {label && (
@@ -140,6 +152,7 @@ export default function FileUpload({
         className={`relative border-2 border-dashed rounded-lg p-6 
           ${dragActive ? `border-${color}-500 bg-${color}-50` : "border-gray-300"}
           ${error ? "border-red-500" : ""}
+          ${isPending ? `bg-${color}-50` : ""}
           transition-colors duration-200`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -162,6 +175,7 @@ export default function FileUpload({
                 type="button"
                 onClick={() => inputRef.current?.click()}
                 className={`font-medium text-${color}-600 hover:text-${color}-500`}
+                disabled={isPending}
               >
                 {t("CLICK_UPLOAD")}
               </button>
@@ -178,11 +192,19 @@ export default function FileUpload({
           <div className={`flex items-center justify-between p-2 bg-${color}-50 rounded`}>
             <div className="flex items-center space-x-2">
               <FiFile className={`h-6 w-6 text-${color}-600`} />
-              <span className="text-sm text-gray-700">{file.name}</span>
+              {isPending ? (
+                <div className="flex items-center gap-2">
+                  <LoadingIcon className={`inline w-5 h-5 me-1 text-${color}-500 border-black animate-spin`} />
+                  <span className="text-sm text-gray-500">Uploading...</span>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-700">{file.name}</span>
+              )}
             </div>
             <button
               onClick={handleRemove}
               className={`p-1 hover:bg-${color}-100 rounded-full transition-colors`}
+              disabled={isPending}
             >
               <FiX className="h-5 w-5 text-gray-500" />
             </button>
