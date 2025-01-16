@@ -9,7 +9,7 @@ type ColorScheme =
   | "outline-red"
   | "purple"
   | "outline-purple"
-  | "purple-light"
+  | "light-purple"
   | "cyan"
   | "outline-cyan"
   | "blue"
@@ -45,7 +45,7 @@ function Button({
     'outline-red': "text-[#d32f2f] border border-[#d32f2f] enabled:hover:bg-[#faf1f1]",
     purple: "bg-purple-600 enabled:hover:bg-purple-700 text-white",
     'outline-purple': "text-purple-600 border border-purple-600 enabled:hover:bg-purple-50",
-    "purple-light": "text-purple-700 bg-purple-100 enabled:hover:bg-purple-200",
+    "light-purple": "text-purple-700 bg-purple-100 enabled:hover:bg-purple-200",
     cyan: "bg-[#1fc7d4] enabled:hover:bg-[#2ea5ad] text-white",
     'outline-cyan': "border border-[#1fc7d4] text-[#1fc7d4] enabled:hover:bg-[#e6fafb]",
     blue: "bg-blue-500 enabled:hover:bg-blue-600 text-white",
@@ -64,6 +64,8 @@ function Button({
     "purple-light": "text-[#b19cd9] bg-[#f4ebfa]",
     cyan: "bg-[#a7e8ed]",
     'outline-cyan': "text-[#a7e8ed] border-[#a7e8ed]",
+    blue: "bg-blue-300",
+    'outline-blue': "border-blue-300 text-blue-300",
     gray: "bg-gray-50 text-gray-500",
   };
 
