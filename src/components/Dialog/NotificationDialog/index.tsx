@@ -55,18 +55,11 @@ export default function NotificationDialog({
       playNotificationSound();
       buttonRef.current?.focus();
 
-      const currentContainer = containerRef.current;
-      if (currentContainer) {
-        currentContainer.addEventListener('keydown', handleKeyDown);
-      }
+      document.addEventListener('keydown', handleKeyDown);
     }
 
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const currentContainer = containerRef.current;
-      if (currentContainer) {
-        currentContainer.removeEventListener('keydown', handleKeyDown);
-      }
+      document.removeEventListener('keydown', handleKeyDown);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleKeyDown, open, type]);
