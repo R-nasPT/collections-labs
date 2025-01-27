@@ -15,7 +15,9 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const getDesktopDrawerSize = () => {
     switch (desktop) {
@@ -38,12 +40,22 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    const content = contentRef.current;
+    if (!content) return;
+
+    // If we're not at the top of the content, this is a scroll
+    if (content.scrollTop > 0) {
+      setIsScrolling(true);
+      return;
+    }
+
     setIsDragging(true);
     setStartY(e.touches[0].clientY);
     setCurrentY(e.touches[0].clientY);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (isScrolling) return;
     if (!isDragging) return;
     
     const touchY = e.touches[0].clientY;
@@ -59,6 +71,11 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
   };
 
   const handleTouchEnd = () => {
+    if (isScrolling) {
+      setIsScrolling(false);
+      return;
+    }
+    
     if (!isDragging) return;
 
     const deltaY = currentY - startY;
