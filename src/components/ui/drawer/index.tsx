@@ -18,6 +18,7 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
   const [isScrolling, setIsScrolling] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
 
   const getDesktopDrawerSize = () => {
     switch (desktop) {
@@ -40,6 +41,15 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    // ถ้าการแตะเริ่มที่ handle ให้เริ่มการลากทันที
+    if (e.target === handleRef.current) {
+      setIsDragging(true);
+      setStartY(e.touches[0].clientY);
+      setCurrentY(e.touches[0].clientY);
+      return;
+    }
+
+    // สำหรับการแตะที่คอนเทนท์
     const content = contentRef.current;
     if (!content) return;
 
@@ -136,12 +146,18 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
         onTouchEnd={handleTouchEnd}
       >
         <section className="h-full flex flex-col">
-          <div
-            className="flex justify-center p-2 bg-gray-50 rounded-t-2xl cursor-pointer"
-            onClick={onClose}
-          >
-            <div className="py-1 w-14 bg-slate-400 rounded-full" />
-          </div>
+          {showHandle && (
+            <div ref={handleRef}>
+              <div
+                className={cn(
+                  "mx-auto mt-4 mb-2 h-2 w-[100px] rounded-full",
+                  "bg-[#f4f4f5]"
+                )}
+                role="presentation"
+                aria-hidden="true"
+              />
+            </div>
+          )}
           <div className="flex-1 overflow-auto hide-scrollbar">{children}</div>
         </section>
       </aside>
