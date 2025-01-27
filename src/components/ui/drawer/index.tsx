@@ -42,7 +42,10 @@ export default function Drawer({ isOpen, onClose, children, desktop, mobile }: D
 
   const handleTouchStart = (e: React.TouchEvent) => {
     // ถ้าการแตะเริ่มที่ handle ให้เริ่มการลากทันที
-    if (e.target === handleRef.current) {
+    if (
+      handleRef.current &&
+      (handleRef.current === e.target || handleRef.current.contains(e.target as Node))
+    ) {
       setIsDragging(true);
       setStartY(e.touches[0].clientY);
       setCurrentY(e.touches[0].clientY);
