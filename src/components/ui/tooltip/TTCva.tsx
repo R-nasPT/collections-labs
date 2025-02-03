@@ -280,3 +280,31 @@ export default function Tooltip({
     </div>
   );
 }
+
+// ----------------- example ------------------------
+
+<Tooltip 
+  content={
+    <div>
+      <h3 className="font-bold">Custom Content</h3>
+      <p>With HTML and components!</p>
+    </div>
+  }
+  position="right"
+  colorSchemes="warning"
+  size="xs"
+  animation="scale"
+  rounded="lg"
+  interactive
+  delayShow={200}
+  delayHide={200}
+  maxWidth="300px"
+  onShow={() => console.log('Tooltip shown')}
+>
+    <button
+        className="rounded p-1.5 "
+        onClick={() => handlePrint()}
+    >
+          <RePrint />
+      </button>
+  </Tooltip>
