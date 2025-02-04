@@ -14,7 +14,13 @@ interface UseUrlFiltersOptions<T> {
   updateAllowed?: boolean;
 }
 
-const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilters = {}, sortParams = [], updateMethod = "push", updateAllowed = true }: UseUrlFiltersOptions<FilterState<T>>) => {
+const useUrlFilters = <T extends FilterState<T>>({
+  initialFilters,
+  constantFilters = {},
+  sortParams = [],
+  updateMethod = "push",
+  updateAllowed = true,
+}: UseUrlFiltersOptions<FilterState<T>>) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
@@ -52,16 +58,21 @@ const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilte
   }, [updateAllowed, shouldUpdateUrl, sortParams, filters, updateMethod, router]);
 
   const handleFilterChange = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
-    setFilters((prev) => {
-      const newFilters = { ...prev, [key]: value };
-      Object.entries(constantFilters).forEach(([reqKey, reqValue]) => {
-        (newFilters as any)[reqKey] = reqValue;
+      setFilters((prev) => {
+        const newFilters = { ...prev, [key]: value };
+        Object.entries(constantFilters).forEach(([constKey, constValue]) => {
+          if (constKey !== key) {
+            (newFilters as any)[constKey] = constValue;
+          }
+        });
+        
+        return newFilters;
       });
-      return newFilters;
-    });
 
-    setShouldUpdateUrl(true);
-  }, [constantFilters]);
+      setShouldUpdateUrl(true)
+    },
+    [constantFilters]
+  );
 
   useEffect(() => {
     updateURL();
@@ -76,7 +87,8 @@ const useUrlFilters = <T extends FilterState<T>>({ initialFilters, constantFilte
 
 export default useUrlFilters;
 
-// ------- วิธีใช้งาน -----------
+
+// ---------------- วิธีใช้งาน ---------------------
 
 interface DeliveryOrdersContentProps {
   initialFilters: {
