@@ -70,9 +70,7 @@ const useUrlFilters = <T extends FilterState<T>>({
       });
 
       setShouldUpdateUrl(true)
-    },
-    [constantFilters]
-  );
+    }, [constantFilters]);
 
   useEffect(() => {
     updateURL();
