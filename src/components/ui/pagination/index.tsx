@@ -2,17 +2,18 @@
 
 import { Link, usePathname } from "@/navigation";
 import { useSearchParams } from "next/navigation";
-import { IoIosArrowBack, IoIosArrowForward } from "@/libs/icons";
-import { useState } from "react";
+import { IoIosArrowBack, IoIosArrowForward } from "@/lib/icons";
+import React, { useState } from "react";
 
 interface PaginationProps {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   total: number;
   onPerPageChange: (newPerPage: number) => void;
+  onPageChange: (newPage: number) => void;
 }
 
-export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageChange  }: PaginationProps) {
+export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageChange, onPageChange  }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
@@ -53,6 +54,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageC
             <Link
               key={i}
               href={createPageUrl(i)}
+              onClick={() => onPageChange(i)}
               aria-current={page === i ? "page" : undefined}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                 page === i
@@ -88,6 +90,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageC
         <div className="flex flex-1 justify-between items-center sm:hidden">
           <Link
             href={createPageUrl(page - 1)}
+            onClick={() => onPageChange(page - 1)}
             className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasPrevPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -104,6 +107,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageC
           </div>
           <Link
             href={createPageUrl(page + 1)}
+            onClick={() => onPageChange(page + 1)}
             className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasNextPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -141,6 +145,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageC
             >
               <Link
                 href={createPageUrl(page - 1)}
+                onClick={() => onPageChange(page - 1)}
                 className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasPrevPage ? "pointer-events-none opacity-50" : ""
                 }`}
@@ -153,6 +158,7 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPerPageC
 
               <Link
                 href={createPageUrl(page + 1)}
+                onClick={() => onPageChange(page + 1)}
                 className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasNextPage ? "pointer-events-none opacity-50" : ""
                 }`}
