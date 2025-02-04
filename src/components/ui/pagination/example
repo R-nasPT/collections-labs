@@ -1,0 +1,131 @@
+"use client";
+
+import { useCheckbox, useIsUpdateAllowedPage, useUrlFilters } from "@/hooks";
+import { UseUrlFiltersOptions } from "@/types";
+import { Pagination } from "@/components/ui";
+import { useDeliveryOrdersList } from "../services/deliveryOrdersList";
+import { useState } from "react";
+import OrderTable from "./OrderTable";
+import DrawerOrderDetail from "./DrawerOrderDetail";
+import OrderStatusFilter from "./OrderStatusFilter";
+import OrderSearch from "./OrderSearch";
+import CancelOrderDialog from "./CancelOrderDialog";
+
+interface DeliveryOrdersContainerProps {
+  initialFilters: {
+    page: number;
+    per_page: number;
+    search?: string;
+    field?: string;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    merchant?: string;
+    courier?: string;
+  };
+  sortParams: string[]
+}
+
+type OrderFilters = DeliveryOrdersContainerProps["initialFilters"]
+
+interface CancelOrder {
+  orderId: string[]; 
+  orderCode: string[]
+}
+
+export default function DeliveryOrdersContainer({ initialFilters, sortParams }: DeliveryOrdersContainerProps) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [openCancel, setOpenCancel] = useState(false);
+  const [cancelOrder, setCancelOrder] = useState<CancelOrder>({ orderId: [], orderCode: [] });
+
+  const isUpdateAllowed = useIsUpdateAllowedPage()
+  const { filters, handleFilterChange } = useUrlFilters({
+    initialFilters,
+    constantFilters: { page: 1 },
+    sortParams,
+    updateAllowed: isUpdateAllowed,
+  } as UseUrlFiltersOptions<OrderFilters>);
+
+  const { data: orders, isLoading, isFetching, refetch } = useDeliveryOrdersList(
+    filters.page, filters.per_page, filters.status, filters.merchant, filters.search, filters.field,
+    filters.startDate, filters.endDate, filters.courier
+  );
+
+  const entries = orders?.data || [];
+  const totalCount = orders?.total || 0;
+
+  const checkboxState = useCheckbox(entries);
+
+  const handleDateChange = (dates: [Date | null, Date | null]) => {
+    const [startDate, endDate] = dates;
+    handleFilterChange("startDate", startDate ? startDate.toISOString() : undefined);
+    handleFilterChange("endDate", endDate ? endDate.toISOString() : undefined);
+  };
+
+  const handleOpenDrawer = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setIsDrawerOpen(true);
+  };
+
+  const handleOpenCancel = (param: CancelOrder | { orderId: string; orderCode: string }) => {
+    const orderId = Array.isArray(param.orderId) ? param.orderId : [param.orderId];
+    const orderCode = Array.isArray(param.orderCode) ? param.orderCode : [param.orderCode];
+
+    setCancelOrder({ orderId, orderCode });
+    setOpenCancel(true);
+  };
+
+  return (
+    <>
+      <OrderSearch
+        handleMerchantChange={(value) => handleFilterChange("merchant", value)}
+        handleSearchChange={(value) => handleFilterChange("search", value)}
+        handleFieldChange={(value) => handleFilterChange("field", value)}
+        handleCourierChange={(value) => handleFilterChange("courier", value)}
+        onDateChange={handleDateChange}
+      />
+
+      <OrderStatusFilter
+        status={filters.status}
+        handleStatusChange={(value) => handleFilterChange("status", value)}
+        statusResponse={orders?.status!}
+      />
+
+      <OrderTable
+        orders={entries}
+        isLoading={isLoading || isFetching}
+        openDrawer={handleOpenDrawer}
+        currentStatus={filters.status}
+        openCancel={handleOpenCancel}
+        checkboxState={checkboxState}
+      />
+
+      <Pagination
+        total={totalCount}
+        hasNextPage={filters.page < Math.ceil(totalCount / filters.per_page)}
+        hasPrevPage={filters.page > 1}
+        onPerPageChange={(value) => handleFilterChange("per_page", value)}
+        onPageChange={(value) => handleFilterChange("page", value)}
+      />
+
+      <DrawerOrderDetail
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        orderId={selectedOrderId}
+        openCancel={handleOpenCancel}
+      />
+
+      <CancelOrderDialog
+        refetch={() => {
+          refetch();
+          checkboxState.resetSelection();
+        }}
+        open={openCancel}
+        onClose={() => setOpenCancel(false)}
+        closeDrawer={() => setIsDrawerOpen(false)}
+        order={cancelOrder}
+      />
+    </>
+  );
+}
