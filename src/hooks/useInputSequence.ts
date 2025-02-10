@@ -49,7 +49,7 @@ function useInputSequence<T extends readonly string[]>({
 
 export default useInputSequence;
 
-// --------- example -------------
+// ---------- example -------------
 
 import React from 'react';
 import useInputSequence from './useInputSequence'; // Adjust the import path
