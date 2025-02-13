@@ -1,3 +1,5 @@
+"use client";
+
 import AsyncSelect from "react-select/async";
 import Select from 'react-select'
 import AsyncCreatableSelect from "react-select/async-creatable"
@@ -24,6 +26,7 @@ interface SearchSelectFieldProps {
   loadingMessage?: string;
   padding?: string;
   rounded?: string;
+  fontSize?: string;
   showArrow?: boolean;
   clearIndicator?: boolean;
   isCreatable?: boolean;
@@ -46,6 +49,7 @@ export default function SearchSelectField({
   loadingMessage = "Loading...",
   padding = "0.25rem 0.5rem",
   rounded = "1rem",
+  fontSize = "16px",
   showArrow = true,
   clearIndicator = true,
   isCreatable = false,
@@ -57,6 +61,18 @@ export default function SearchSelectField({
 }: SearchSelectFieldProps) {
   const { ref, toggleOpen, onClose } = useOutsideClick(false);
   const [hydrated, setHydrated] = useState(false);
+
+  const getErrorMessage = (): string | undefined => {
+    if (typeof name === "string") {
+      const error = name.split(".")
+        .reduce((error: any, part) => error?.[part], errors);
+      return error?.message as string | undefined;
+    }
+    return errors?.[name]?.message as string | undefined;
+  };
+
+  const errorMessage = getErrorMessage();
+  const hasError = !!errorMessage;
 
   useEffect(() => {
     setHydrated(true);
@@ -74,24 +90,26 @@ export default function SearchSelectField({
       ...provided,
       width: '100%',
       minWidth: '150px',
-      borderColor: errors?.[name] ? "#ff3506" : state.isFocused ? "#531ae3" : "#24075c",
+      borderColor: hasError ? "#ff3506" : state.isFocused ? "#531ae3" : "#24075c",
       "&:hover": {
         borderColor: "#531ae3",
       },
       boxShadow: "none",
       borderRadius: rounded,
       padding: padding,
+      fontSize: fontSize
     }),
     placeholder: (provided: any) => ({
       ...provided,
       color: "#433958",
+      fontSize: fontSize
     }),
     option: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: state.isSelected ? "#c084fc" : state.isFocused ? "#f3f4f6" : "white",
+      backgroundColor: state.isSelected ? "#a855f7" : state.isFocused ? "#f3f4f6" : "white",
       color: state.isSelected ? "white" : "#280d5f",
       "&:hover": {
-        backgroundColor: state.isSelected ? "#b978fa" : "#f3f4f6",
+        backgroundColor: state.isSelected ? "#9333ea" : "#f3f4f6",
         color: state.isSelected ? "white" : "#280d5f",
       },
     }),
@@ -155,7 +173,6 @@ export default function SearchSelectField({
       {control ? (
         <Controller
           name={name}
-          defaultValue={defaultValue}
           control={control}
           render={({ field }) => renderSelect(field)}
         />
@@ -163,9 +180,9 @@ export default function SearchSelectField({
         renderSelect()
       )}
 
-      {control && (
+      {control && hasError && (
         <p className="text-[#ff3506] text-xs h-5 pl-3 mt-1">
-          {errors?.[name] && errors?.[name].message as string | undefined}
+          {errorMessage}
         </p>
       )}
     </div>
