@@ -59,7 +59,7 @@ export default function InputField({
           "absolute top-[25%] left-5 px-1 bg-white rounded-full transition-all duration-300 italic",
           "peer-focus:-top-2 peer-focus:text-xs",
           labelClassName,
-          isFilled && "-top-2 text-xs",
+          isFilled && "-top-2 lg:-top-2 text-xs",
           "pointer-events-none peer-focus:font-medium",
           error ? "text-[#fa8383] peer-focus:text-[#ff0606]" : "text-gray-400 peer-focus:text-[#531ae3]"
         )}
