@@ -1,29 +1,45 @@
-// function ที่ใช้สำหรับการกดที่นอกกล่อง
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef, RefObject } from "react";
 
-export default function useClickOutside(callbackFn: () => void) {
-  // สร้างตัวแปร domNodeRef ที่ใช้ useRef เพื่อเก็บ reference ของ DOM node
-  let domNodeRef = useRef<HTMLDivElement | null>(null);
-  //   let domNodeRef = useRef<HTMLElement | null>(null);
+interface UseOutsideClickResult {
+  ref: RefObject<HTMLDivElement>;
+  isOpen: boolean;
+  toggleOpen: () => void;
+  open: () => void;
+  onClose: () => void;
+}
+
+const useOutsideClick = (
+  initialIsOpen: boolean = false
+): UseOutsideClickResult => {
+  const [isOpen, setIsOpen] = useState<boolean>(initialIsOpen);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // สร้าง handler function ที่จะตรวจสอบว่า event เกิดขึ้นภายนอก domNodeRef หรือไม่
-    let handler = (event: MouseEvent) => {
-      // ถ้า event target ไม่ได้อยู่ภายใน domNodeRef, ให้เรียก callback function
-      if (!domNodeRef.current?.contains(event.target as Node)) {
-        callbackFn();
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
       }
     };
 
-    // เพิ่ม event listener ที่จะเรียกใช้ handler เมื่อมี mousedown event
-    document.addEventListener("mousedown", handler);
-
-    // คืนค่า cleanup function เพื่อเอา event listener ออกเมื่อ component ถูก unmount
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [callbackFn]); // ใช้ callbackFn เป็น dependency เพื่อให้แน่ใจว่าค่า callbackFn ที่ถูกใช้เป็นค่าใหม่เสมอ
+  }, [ref]);
 
-  // คืนค่า domNodeRef เพื่อให้ component ที่ใช้ hook นี้สามารถใช้อ้างอิง DOM node ได้
-  return domNodeRef;
-}
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const open = () => {
+    setIsOpen(true);
+  };
+
+  const onClose = () => {
+    setIsOpen(false);
+  };
+
+  return { ref, isOpen, toggleOpen, open, onClose };
+};
+
+export default useOutsideClick;
