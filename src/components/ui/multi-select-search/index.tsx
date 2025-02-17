@@ -1,11 +1,11 @@
 "use client";
 
 import AsyncSelect from "react-select/async";
-import Select from 'react-select'
+import Select, { MenuPosition, StylesConfig } from 'react-select'
 import AsyncCreatableSelect from "react-select/async-creatable"
 import CreatableSelect from "react-select/creatable"
 import { useEffect, useState } from "react";
-import { Controller, Control, FieldErrors } from "react-hook-form";
+import { Controller, Control, FieldErrors, ControllerRenderProps } from "react-hook-form";
 import { useOutsideClick } from "@/hooks";
 import { cn } from "@/utils";
 
@@ -85,8 +85,8 @@ export default function SearchSelectField({
     return null;
   }
 
-  const customStyles = {
-    control: (provided: any, state: any) => ({
+  const customStyles: StylesConfig<Option, false> = {
+    control: (provided, state) => ({
       ...provided,
       width: '100%',
       minWidth: '150px',
@@ -99,12 +99,12 @@ export default function SearchSelectField({
       padding: padding,
       fontSize: fontSize
     }),
-    placeholder: (provided: any) => ({
+    placeholder: (provided) => ({
       ...provided,
       color: "#433958",
       fontSize: fontSize
     }),
-    option: (provided: any, state: any) => ({
+    option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected ? "#a855f7" : state.isFocused ? "#f3f4f6" : "white",
       color: state.isSelected ? "white" : "#280d5f",
@@ -113,19 +113,19 @@ export default function SearchSelectField({
         color: state.isSelected ? "white" : "#280d5f",
       },
     }),
-    dropdownIndicator: (provided: any) => ({
+    dropdownIndicator: (provided) => ({
       ...provided,
       display: showArrow ? "flex" : "none",
     }),
-    clearIndicator: (provided: any) => ({
+    clearIndicator: (provided) => ({
       ...provided,
       display: clearIndicator ? "flex" : "none",
     }),
-    menu: (provided: any) => ({
+    menu: (provided) => ({
       ...provided,
       zIndex: 9999,
     }),
-    menuPortal: (base: any) => ({
+    menuPortal: (base) => ({
       ...base,
       zIndex: 9999,
     }),
@@ -136,9 +136,8 @@ export default function SearchSelectField({
     }),
   };
 
-  const renderSelect = (field?: any) => {
+  const renderSelect = (field?: ControllerRenderProps<any, string>) => {
     const commonProps = {
-      ...field,
       styles: customStyles,
       placeholder,
       onMenuOpen: toggleOpen,
@@ -148,7 +147,7 @@ export default function SearchSelectField({
       isClearable: clearIndicator,
       defaultValue: defaultValue,
       menuPortalTarget: document.body,
-      menuPosition: 'fixed',
+      menuPosition: 'fixed' as MenuPosition,
       isLoading: isLoading,
       loadingMessage: () => loadingMessage,
       isDisabled,
