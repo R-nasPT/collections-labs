@@ -22,6 +22,7 @@ interface FormInputProps<T extends FieldValues> {
   className?: string;
   labelClassName?: string;
   containerClassName?: string;
+  floatingLabelClassName?: string;
   disabled?: boolean;
 }
 
@@ -35,16 +36,16 @@ export default function FormInput<T extends FieldValues>({
   className,
   labelClassName,
   containerClassName,
+  floatingLabelClassName,
   disabled,
 }: FormInputProps<T>) {
   const [isFilled, setIsFilled] = useState(false);
   const handleNoScroll = useNoScroll();
   const fieldValue = useWatch<T>({ name, control });
 
-  // ใช้ฟังก์ชันเพื่อดึง error message แบบ dynamic
   const getErrorMessage = (): string | undefined => {
     if (typeof name === "string") {
-      const error = name.split(".") // แยก path เช่น items.0.putAwayAmount
+      const error = name.split(".")
         .reduce((error: any, part) => error?.[part], errors);
       return error?.message as string | undefined;
     }
@@ -90,7 +91,7 @@ export default function FormInput<T extends FieldValues>({
               ? "bg-gradient-to-b from-white to-[#ebebeb]"
               : "bg-[#f0f0f0]"),
           labelClassName,
-          isFilled && "-top-2 lg:-top-2 text-xs"
+          isFilled && ["-top-2 md:-top-2 lg:-top-2 text-xs", floatingLabelClassName]
         )}
       >
         {placeholder}
@@ -102,3 +103,17 @@ export default function FormInput<T extends FieldValues>({
     </div>
   );
 }
+
+// -----------------------------------------
+
+     <FormInput
+        control={control}
+        name={`items.${index}.returnCourierTrackingCode`}
+        placeholder="Returned Tracking Code"
+        register={register}
+        errors={errors}
+        containerClassName="md:w-[40%]"
+        labelClassName="md:top-[15%] text-[10px] left-3 peer-focus:text-[8px] peer-focus:-top-1.5"
+        floatingLabelClassName="text-[8px] -top-1.5 md:-top-1.5 lg:-top-1.5"
+        className="py-2 px-4 text-xs rounded-xl"
+      />
