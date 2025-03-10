@@ -3,12 +3,12 @@
 import { cn } from "@/utils";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
-import { useController, Control, FieldError, Message } from "react-hook-form";
+import { useController, Control, FieldError, Message, FieldValues } from "react-hook-form";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 interface DatePickerInputProps {
   name: string;
-  control: Control<any>;
+  control: Control<FieldValues>;
   className?: string;
   containerClassName?: string;
   wrapperClassName?: string;
