@@ -5,20 +5,25 @@ import Select, { MenuPosition, StylesConfig } from 'react-select'
 import AsyncCreatableSelect from "react-select/async-creatable"
 import CreatableSelect from "react-select/creatable"
 import { useEffect, useState } from "react";
-import { Controller, Control, FieldErrors, ControllerRenderProps } from "react-hook-form";
+import { Controller, Control, FieldErrors, ControllerRenderProps, FieldValues, Path } from "react-hook-form";
 import { useOutsideClick } from "@/hooks";
 import { cn } from "@/utils";
+
+type NestedError = {
+  message?: string;
+  [key: string]: NestedError | string | undefined;
+};
 
 interface Option {
   value: string;
   label: string;
 }
 
-interface SearchSelectFieldProps {
-  name: string;
+interface SearchSelectFieldProps<T extends FieldValues> {
+  name: Path<T>;
   placeholder: string;
-  control?: Control<any>;
-  errors?: FieldErrors;
+  control?: Control<T>;
+  errors?: FieldErrors<T>;
   className?: string;
   value?: Option;
   defaultValue?: Option;
@@ -37,7 +42,7 @@ interface SearchSelectFieldProps {
   onCreateOption?: (inputValue: string) => void;
 }
 
-export default function SearchSelectField({
+export default function SearchSelectField<T extends FieldValues>({
   name,
   placeholder,
   control,
@@ -58,17 +63,21 @@ export default function SearchSelectField({
   options,
   loadOptions,
   onCreateOption
-}: SearchSelectFieldProps) {
+}: SearchSelectFieldProps<T>) {
   const { ref, toggleOpen, onClose } = useOutsideClick(false);
   const [hydrated, setHydrated] = useState(false);
 
   const getErrorMessage = (): string | undefined => {
+    if (!errors) return undefined;
+    
     if (typeof name === "string") {
       const error = name.split(".")
-        .reduce((error: any, part) => error?.[part], errors);
-      return error?.message as string | undefined;
+        .reduce((error: NestedError | undefined, part) => 
+          error && typeof error === 'object' ? error[part] as NestedError | undefined : undefined, 
+          errors as unknown as NestedError);
+      return error?.message;
     }
-    return errors?.[name]?.message as string | undefined;
+    return errors[name]?.message as string | undefined;
   };
 
   const errorMessage = getErrorMessage();
@@ -136,7 +145,7 @@ export default function SearchSelectField({
     }),
   };
 
-  const renderSelect = (field?: ControllerRenderProps<any, string>) => {
+  const renderSelect = (field?: ControllerRenderProps<T, Path<T>>) => {
     const commonProps = {
       styles: customStyles,
       placeholder,
