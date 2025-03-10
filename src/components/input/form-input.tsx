@@ -12,6 +12,11 @@ import {
 } from "react-hook-form";
 import { cn } from "@/utils";
 
+type NestedError = {
+  message?: string;
+  [key: string]: NestedError | string | undefined;
+};
+
 interface FormInputProps<T extends FieldValues> {
   name: Path<T>;
   placeholder: string;
@@ -44,13 +49,15 @@ export default function FormInput<T extends FieldValues>({
   const fieldValue = useWatch<T>({ name, control });
 
   const getErrorMessage = (): string | undefined => {
-    if (typeof name === "string") {
-      const error = name.split(".")
-        .reduce((error: any, part) => error?.[part], errors);
-      return error?.message as string | undefined;
-    }
-    return errors[name]?.message as string | undefined;
-  };
+  if (typeof name === "string") {
+    const error = name.split(".")
+      .reduce((error: NestedError | undefined, part) => 
+        error && typeof error === 'object' ? error[part] as NestedError | undefined : undefined, 
+        errors as unknown as NestedError);
+    return error?.message;
+  }
+  return errors[name]?.message as string | undefined;
+};
 
   const errorMessage = getErrorMessage();
   const hasError = !!errorMessage;
