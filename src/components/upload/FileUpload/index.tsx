@@ -1,12 +1,9 @@
 import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
-import { FiUploadCloud, FiFile, FiX } from "@/lib/icons";
-
-interface FileUploadResponse {
-  contentType: string;
-  filename: string;
-  link: string;
-}
+import { FiUploadCloud, FiFile, FiX, LoadingIcon } from "@/lib/icons";
+import { useFileUpload } from "@/services";
+import { MediaUploadResponse } from "@/types";
+import { cn } from "@/utils";
 
 type AcceptedTypes =
   | "image/*"
@@ -21,8 +18,25 @@ type AcceptedTypes =
 
 type ColorScheme = "blue" | "purple"
 
+const colorVariants = {
+  blue: {
+    text: "text-blue-600 hover:text-blue-500",
+    bg: "bg-blue-50",
+    border: "border-blue-500",
+    hover: "hover:bg-blue-100",
+    icon: "text-blue-600"
+  },
+  purple: {
+    text: "text-purple-600 hover:text-purple-500", 
+    bg: "bg-purple-50",
+    border: "border-purple-500",
+    hover: "hover:bg-purple-100",
+    icon: "text-purple-600" 
+  }
+}
+
 interface FileUploadProps {
-  onUploadComplete?: (status: "success" | "error", payload: FileUploadResponse | Error | null) => void;
+  onUploadComplete?: (status: "success" | "error", payload: MediaUploadResponse | Error | null) => void;
   maxSize?: number;
   acceptedTypes?: AcceptedTypes[];
   label?: string;
@@ -40,7 +54,11 @@ export default function FileUpload({
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const t = useTranslations("INDEX");
+  const t = useTranslations();
+
+  const { mutateAsync, isPending } = useFileUpload()
+
+  const colorClasses = colorVariants[color]
 
   const getAcceptedTypesDisplay = () => {
     const types: string[] = [];
@@ -139,7 +157,7 @@ export default function FileUpload({
     }
     onUploadComplete?.("success", null);
   };
-  
+
   return (
     <div className="w-full">
       {label && (
@@ -149,11 +167,11 @@ export default function FileUpload({
       )}
 
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 
-          ${dragActive ? `border-${color}-500 bg-${color}-50` : "border-gray-300"}
-          ${error ? "border-red-500" : ""}
-          ${isPending ? `bg-${color}-50` : ""}
-          transition-colors duration-200`}
+        className={cn("relative border-2 border-dashed rounded-lg p-6", 
+          dragActive ? `${colorClasses.border} ${colorClasses.bg}` : "border-gray-300",
+          error ? "border-red-500" : "",
+          isPending ? colorClasses.bg : "",
+          "transition-colors duration-200")}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -174,28 +192,28 @@ export default function FileUpload({
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className={`font-medium text-${color}-600 hover:text-${color}-500`}
+                className={cn("font-medium", colorClasses.text)}
                 disabled={isPending}
               >
-                {t("CLICK_UPLOAD")}
+                {t("INDEX.CLICK_UPLOAD")}
               </button>
-              <span className="text-gray-500"> {t("OR_DRAG_DROP")}</span>
+              <span className="text-gray-500"> {t("INDEX.OR_DRAG_DROP")}</span>
             </div>
             <p className="mt-2 text-sm text-gray-500">
-              {t("FILE_UPLOAD_ACCEPTED", {
+              {t("INDEX.FILE_UPLOAD_ACCEPTED", {
                 types: getAcceptedTypesDisplay(),
                 size: maxSize,
               })}
             </p>
           </div>
         ) : (
-          <div className={`flex items-center justify-between p-2 bg-${color}-50 rounded`}>
+          <div className={cn(`flex items-center justify-between p-2 rounded`, colorClasses.bg)}>
             <div className="flex items-center space-x-2">
-              <FiFile className={`h-6 w-6 text-${color}-600`} />
+              <FiFile className={cn(`h-6 w-6`, colorClasses.icon)} />
               {isPending ? (
                 <div className="flex items-center gap-2">
-                  <LoadingIcon className={`inline w-5 h-5 me-1 text-${color}-500 border-black animate-spin`} />
-                  <span className="text-sm text-gray-500">Uploading...</span>
+                  <LoadingIcon className={cn(`inline w-5 h-5 me-1 border-black animate-spin`, colorClasses.icon)} />
+                  <span className="text-sm text-gray-500">{t("BUTTON.UPLOADING")}</span>
                 </div>
               ) : (
                 <span className="text-sm text-gray-700">{file.name}</span>
