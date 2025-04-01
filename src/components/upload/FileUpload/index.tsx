@@ -221,7 +221,7 @@ export default function FileUpload({
             </div>
             <button
               onClick={handleRemove}
-              className={`p-1 hover:bg-${color}-100 rounded-full transition-colors`}
+              className={cn(`p-1 rounded-full transition-colors`, colorClasses.hover)}
               disabled={isPending}
             >
               <FiX className="h-5 w-5 text-gray-500" />
