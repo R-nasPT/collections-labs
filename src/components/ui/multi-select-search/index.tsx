@@ -21,7 +21,7 @@ interface Option {
 
 interface SearchSelectFieldProps<T extends FieldValues> {
   name: Path<T>;
-  placeholder: string;
+  placeholder?: string;
   control?: Control<T>;
   errors?: FieldErrors<T>;
   className?: string;
@@ -29,9 +29,11 @@ interface SearchSelectFieldProps<T extends FieldValues> {
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
   loadingMessage?: string;
+  minHeight?: string;
   padding?: string;
   rounded?: string;
   fontSize?: string;
+  showIndicators?: boolean;
   showArrow?: boolean;
   clearIndicator?: boolean;
   isCreatable?: boolean;
@@ -52,9 +54,11 @@ export default function SearchSelectField<T extends FieldValues>({
   defaultValue,
   onChange,
   loadingMessage = "Loading...",
+  minHeight = "38px",
   padding = "0.25rem 0.5rem",
   rounded = "1rem",
   fontSize = "16px",
+  showIndicators = true,
   showArrow = true,
   clearIndicator = true,
   isCreatable = false,
@@ -97,6 +101,7 @@ export default function SearchSelectField<T extends FieldValues>({
   const customStyles: StylesConfig<Option, false> = {
     control: (provided, state) => ({
       ...provided,
+      minHeight,
       width: '100%',
       minWidth: '150px',
       borderColor: hasError ? "#ff3506" : state.isFocused ? "#531ae3" : "#24075c",
@@ -122,13 +127,19 @@ export default function SearchSelectField<T extends FieldValues>({
         color: state.isSelected ? "white" : "#280d5f",
       },
     }),
+    indicatorsContainer: (base) => ({
+      ...base,
+      display: showIndicators ? "flex" : "none",
+    }),
     dropdownIndicator: (provided) => ({
       ...provided,
       display: showArrow ? "flex" : "none",
+      padding: "2px"
     }),
     clearIndicator: (provided) => ({
       ...provided,
       display: clearIndicator ? "flex" : "none",
+      padding: "2px"
     }),
     menu: (provided) => ({
       ...provided,
