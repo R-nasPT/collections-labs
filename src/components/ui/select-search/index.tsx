@@ -34,8 +34,6 @@ interface SearchSelectFieldProps<T extends FieldValues> {
   rounded?: string;
   fontSize?: string;
   showIndicators?: boolean;
-  showArrow?: boolean;
-  clearIndicator?: boolean;
   isCreatable?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -59,8 +57,6 @@ export default function SearchSelectField<T extends FieldValues>({
   rounded = "1rem",
   fontSize = "16px",
   showIndicators = true,
-  showArrow = true,
-  clearIndicator = true,
   isCreatable = false,
   isLoading,
   isDisabled = false,
@@ -131,16 +127,6 @@ export default function SearchSelectField<T extends FieldValues>({
       ...base,
       display: showIndicators ? "flex" : "none",
     }),
-    dropdownIndicator: (provided) => ({
-      ...provided,
-      display: showArrow ? "flex" : "none",
-      padding: "2px"
-    }),
-    clearIndicator: (provided) => ({
-      ...provided,
-      display: clearIndicator ? "flex" : "none",
-      padding: "2px"
-    }),
     menu: (provided) => ({
       ...provided,
       zIndex: 9999,
@@ -164,7 +150,7 @@ export default function SearchSelectField<T extends FieldValues>({
       onMenuClose: onClose,
       className: "react-select-container",
       classNamePrefix: "react-select",
-      isClearable: clearIndicator,
+      isClearable: true,
       defaultValue: defaultValue,
       menuPortalTarget: document.body,
       menuPosition: 'fixed' as MenuPosition,
