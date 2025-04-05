@@ -34,6 +34,7 @@ interface SearchSelectFieldProps<T extends FieldValues> {
   rounded?: string;
   fontSize?: string;
   showIndicators?: boolean;
+  indicatorsSpacing?: string;
   isCreatable?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -57,6 +58,7 @@ export default function SearchSelectField<T extends FieldValues>({
   rounded = "1rem",
   fontSize = "16px",
   showIndicators = true,
+  indicatorsSpacing,
   isCreatable = false,
   isLoading,
   isDisabled = false,
@@ -126,6 +128,16 @@ export default function SearchSelectField<T extends FieldValues>({
     indicatorsContainer: (base) => ({
       ...base,
       display: showIndicators ? "flex" : "none",
+      gap: indicatorsSpacing || "8px",
+      paddingRight: indicatorsSpacing || "8px"
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      padding: "0px"
+    }),
+    clearIndicator: (provided) => ({
+      ...provided,
+      padding: "0px"
     }),
     menu: (provided) => ({
       ...provided,
