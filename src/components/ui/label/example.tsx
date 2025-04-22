@@ -1,5 +1,12 @@
 <div className="md:w-[35%]">
   <Label
+    label={label}
+    icon={<Icon className={hasError ? "text-red-600" : `text-purple-600`} />}
+    htmlFor={name}
+    errors={hasError}
+    required
+  />
+  <Label
     htmlFor={`items.${index}.deliveryCode`}
     label={t("LABEL.RETURNED_DELIVERY_ORDER")}
     errors={errors.items?.[index]?.deliveryCode?.message}
