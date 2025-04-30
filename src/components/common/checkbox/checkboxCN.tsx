@@ -9,6 +9,7 @@ interface CheckboxProps<T extends FieldValues> {
   control?: Control<T>;
   checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
   label?: string;
   labelClassName?: string;
   size?: "sm" | "md" | "lg";
@@ -21,6 +22,7 @@ export default function Checkbox<T extends FieldValues>({
   checked = false,
   control,
   onChange,
+  className,
   label,
   labelClassName,
   size = "md",
@@ -62,10 +64,10 @@ export default function Checkbox<T extends FieldValues>({
               "peer relative appearance-none rounded-md border-2 border-lavender-mist transition-all",
               "before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full",
               "before:opacity-0 before:transition-opacity before:bg-purple-900",
+              "checked:border-purple-700 checked:bg-purple-700 hover:before:opacity-10 cursor-pointer",
+              "disabled:checked:border-gray-500 disabled:checked:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:before:opacity-0",
               sizeClasses[size],
-              disabled
-                ? "checked:border-gray-500 checked:bg-gray-500 cursor-not-allowed opacity-50"
-                : "checked:border-purple-700 checked:bg-purple-700 hover:before:opacity-10 cursor-pointer"
+              className
             )}
             id={id}
             checked={field?.value ?? checked}
