@@ -50,16 +50,14 @@ export default function Input<T extends FieldValues>({
     return undefined;
   };
 
-  const errorMessages: string[] = [];
+  let errorMessage: string | undefined;
   if (typeof errors === "string") {
-    errorMessages.push(errors);
-  }
-  const formErrorMessage = getErrorMessage();
-  if (formErrorMessage) {
-    errorMessages.push(formErrorMessage);
+    errorMessage = errors;
+  } else {
+    errorMessage = getErrorMessage();
   }
 
-  const hasError = errorMessages.length > 0;
+  const hasError = !!errorMessage;
 
   const formProps = register && name ? register(name) : {};
 
@@ -87,7 +85,7 @@ export default function Input<T extends FieldValues>({
         {...restProps}
       />
 
-      {hasError && <p className="text-[#ff3506] text-xs pl-3">{errorMessages.join(", ")}</p>}
+      {hasError && <p className="text-[#ff3506] text-xs pl-3">{errorMessage}</p>}
     </div>
   );
 }
