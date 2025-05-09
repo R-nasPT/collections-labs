@@ -2,12 +2,7 @@
 
 import { InputHTMLAttributes, Ref } from "react";
 import { useNoScroll } from "@/hooks";
-import {
-  FieldErrors,
-  FieldValues,
-  Path,
-  UseFormRegister,
-} from "react-hook-form";
+import { FieldErrors, FieldValues, Path, UseFormRegister } from "react-hook-form";
 import { cn } from "@/utils";
 
 type NestedError = {
@@ -23,6 +18,7 @@ interface InputProps<T extends FieldValues>
   errors?: FieldErrors<T> | string;
   type?: "text" | "tel" | "url" | "email" | "number" | "password";
   containerClassName?: string;
+  errorClassName?: string;
 }
 
 export default function Input<T extends FieldValues>({
@@ -32,6 +28,7 @@ export default function Input<T extends FieldValues>({
   errors,
   type = "text",
   containerClassName,
+  errorClassName,
   className,
   onWheel,
   ...restProps
@@ -85,7 +82,7 @@ export default function Input<T extends FieldValues>({
         {...restProps}
       />
 
-      {hasError && <p className="text-[#ff3506] text-xs pl-3">{errorMessage}</p>}
+      {hasError && <p className={cn("text-[#ff3506] text-xs pl-3", errorClassName)}>{errorMessage}</p>}
     </div>
   );
 }
