@@ -25,6 +25,7 @@ interface SearchSelectFieldProps<T extends FieldValues> {
   control?: Control<T>;
   errors?: FieldErrors<T>;
   className?: string;
+  errorClassName?: string;
   value?: Option;
   defaultValue?: Option;
   onChange?: (option: Option | null) => void;
@@ -49,6 +50,7 @@ export default function SearchSelectField<T extends FieldValues>({
   control,
   errors,
   className,
+  errorClassName,
   value,
   defaultValue,
   onChange,
@@ -198,7 +200,7 @@ export default function SearchSelectField<T extends FieldValues>({
       )}
 
       {control && hasError && (
-        <p className="text-[#ff3506] text-xs h-5 pl-3 mt-1">
+        <p className={cn("text-[#ff3506] text-xs pl-3", errorClassName)}>
           {errorMessage}
         </p>
       )}
