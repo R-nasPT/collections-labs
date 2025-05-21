@@ -9,7 +9,7 @@ type FilterState<T> = {
 interface UseUrlFiltersOptions<T> {
   initialFilters: FilterState<T>;
   constantFilters?: Partial<FilterState<T>>;
-  sortParams?: Array<keyof T>;
+  sortParams?: ReadonlyArray<keyof T>;
   updateMethod?: "push" | "replace";
   updateAllowed?: boolean;
 }
@@ -40,7 +40,7 @@ const useUrlFilters = <T extends FilterState<T>>({
         }
       };
 
-      (sortParams as Array<keyof T>).forEach(addParameter);
+      sortParams.forEach(addParameter);
 
       (Object.keys(filters) as Array<keyof T>).forEach((key) => {
         if (!sortParams.includes(key)) {
@@ -62,7 +62,7 @@ const useUrlFilters = <T extends FilterState<T>>({
         const newFilters = { ...prev, [key]: value };
         Object.entries(constantFilters).forEach(([constKey, constValue]) => {
           if (constKey !== key) {
-            (newFilters as any)[constKey] = constValue;
+            (newFilters as Record<string, unknown>)[constKey] = constValue;
           }
         });
         
@@ -99,18 +99,7 @@ interface DeliveryOrdersContentProps {
     endDate?: string | null;
     merchant?: string;
   };
-  sortParams: string[]
-}
-
-interface MyFilters {
-  page: number;
-  per_page: number;
-  search?: string;
-  field?: string;
-  status?: string;
-  startDate?: string | undefined;
-  endDate?: string | undefined;
-  merchant?: string;
+  sortParams: ReadonlyArray<keyof DeliveryOrdersContainerProps["initialFilters"]
 }
 
 export default function DeliveryOrdersContent({ initialFilters, sortParams }: DeliveryOrdersContentProps) {
@@ -121,4 +110,4 @@ export default function DeliveryOrdersContent({ initialFilters, sortParams }: De
     constantFilters: { page: 1 },
     sortParams,
     updateAllowed: isUpdateAllowed,
-  } as UseUrlFiltersOptions<MyFilters>);
+  } as const);
