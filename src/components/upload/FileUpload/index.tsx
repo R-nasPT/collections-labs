@@ -208,15 +208,20 @@ export default function FileUpload({
           </div>
         ) : (
           <div className={cn(`flex items-center justify-between p-2 rounded`, colorClasses.bg)}>
-            <div className="flex items-center space-x-2">
-              <FiFile className={cn(`h-6 w-6`, colorClasses.icon)} />
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <FiFile className={cn(`min-h-6 min-w-6`, colorClasses.icon)} />
               {isPending ? (
                 <div className="flex items-center gap-2">
                   <LoadingIcon className={cn(`inline w-5 h-5 me-1 border-black animate-spin`, colorClasses.icon)} />
                   <span className="text-sm text-gray-500">{t("BUTTON.UPLOADING")}</span>
                 </div>
               ) : (
-                <span className="text-sm text-gray-700">{file.name}</span>
+                <span 
+                  className="text-sm text-gray-700 truncate overflow-hidden cursor-default"
+                  title={file.name}
+                >
+                  {file.name}
+                </span>
               )}
             </div>
             <button
