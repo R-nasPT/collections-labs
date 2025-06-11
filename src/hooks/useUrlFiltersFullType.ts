@@ -2,31 +2,27 @@ import { useRouter } from "@/navigation";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState, useEffect } from "react";
 
-type FilterState<T> = {
-  [K in keyof T]: T[K];
-};
-
-interface UseUrlFiltersOptions<T> {
-  initialFilters: FilterState<T>;
-  constantFilters?: Partial<FilterState<T>>;
-  sortParams?: ReadonlyArray<keyof T>;
+interface UseUrlFiltersOptions<T extends Record<string, unknown>> {
+  initialFilters: T;
+  constantFilters?: Partial<T>;
+  sortParams?: readonly (keyof T)[];
   updateMethod?: "push" | "replace";
   updateAllowed?: boolean;
 }
 
-const useUrlFilters = <T extends FilterState<T>>({
+const useUrlFilters = <T extends Record<string, unknown>>({
   initialFilters,
   constantFilters = {},
   sortParams = [],
   updateMethod = "push",
   updateAllowed = true,
-}: UseUrlFiltersOptions<FilterState<T>>) => {
+}: UseUrlFiltersOptions<T>) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [shouldUpdateUrl, setShouldUpdateUrl] = useState(false);
-  const [filters, setFilters] = useState<FilterState<T>>(() => {
+  const [filters, setFilters] = useState<T>(() => {
     const urlFilters = Object.fromEntries(searchParams.entries()) as Partial<T>;
-    return { ...initialFilters, ...urlFilters } as FilterState<T>;
+    return { ...initialFilters, ...urlFilters } as T;
   });
 
   const updateURL = useCallback(() => {
@@ -58,19 +54,19 @@ const useUrlFilters = <T extends FilterState<T>>({
   }, [updateAllowed, shouldUpdateUrl, sortParams, filters, updateMethod, router]);
 
   const handleFilterChange = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [key]: value };
-        Object.entries(constantFilters).forEach(([constKey, constValue]) => {
-          if (constKey !== key) {
-            (newFilters as Record<string, unknown>)[constKey] = constValue;
-          }
-        });
-        
-        return newFilters;
+    setFilters((prev) => {
+      const newFilters = { ...prev, [key]: value };
+      Object.entries(constantFilters).forEach(([constKey, constValue]) => {
+        if (constKey !== key) {
+          (newFilters as Record<string, unknown>)[constKey] = constValue;
+        }
       });
+      
+      return newFilters;
+    });
 
-      setShouldUpdateUrl(true)
-    }, [constantFilters]);
+    setShouldUpdateUrl(true);
+  }, [constantFilters]);
 
   useEffect(() => {
     updateURL();
@@ -110,4 +106,4 @@ export default function DeliveryOrdersContent({ initialFilters, sortParams }: De
     constantFilters: { page: 1 },
     sortParams,
     updateAllowed: isUpdateAllowed,
-  } as const);
+  });
