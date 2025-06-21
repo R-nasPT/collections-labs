@@ -26,10 +26,9 @@ interface UseAnalyticsReturn {
   ) => void;
 }
 
-const useAnalytics = (): UseAnalyticsReturn => {
-  const pathname = usePathname();
+        // ================================================ Log ================================================
 
-  const logToConsole = useCallback((event: string, data: Record<string, AnalyticsValue>) => {
+const logToConsole = useCallback((event: string, data: Record<string, AnalyticsValue>, pathname: string) => {
     // ตรวจสอบว่าอยู่ในโหมด development
     if (process.env.NODE_ENV === 'development') {
       const timestamp = new Date().toLocaleString('th-TH', {
@@ -119,13 +118,17 @@ const useAnalytics = (): UseAnalyticsReturn => {
       });
     }
   }, [pathname]);
+        // ================================================ Log End ================================================
+
+        // ================================================ Analytics ================================================
+const useAnalytics = (): UseAnalyticsReturn => {
+  const pathname = usePathname();
 
   const track = useCallback(
     <T extends Record<string, AnalyticsValue>>(
       event: string,
       additionalData: AnalyticsData<T> = {} as AnalyticsData<T>
     ) => {
-        // ================================================ ส่วนที่ส่งข้อมูลไปจริงๆ ================================================
       if (typeof window !== "undefined") {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
@@ -134,8 +137,7 @@ const useAnalytics = (): UseAnalyticsReturn => {
           timestamp: new Date().toISOString(),
           ...additionalData,
         });
-      // ================================================ จบส่วนที่ส่งข้อมูลไปจริงๆ ================================================
-        logToConsole(event, additionalData);
+        logToConsole(event, additionalData, pathname);
       }
     },
     [pathname]
@@ -143,6 +145,7 @@ const useAnalytics = (): UseAnalyticsReturn => {
 
   return { track };
 };
+      // ================================================ Analytics ================================================
 
 export default useAnalytics;
 export type { AnalyticsData, AnalyticsValue };
