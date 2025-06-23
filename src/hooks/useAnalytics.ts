@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "@/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 type AnalyticsValue =
   | string
@@ -123,25 +124,62 @@ const logToConsole = useCallback((event: string, data: Record<string, AnalyticsV
         // ================================================ Analytics ================================================
 const useAnalytics = (): UseAnalyticsReturn => {
   const pathname = usePathname();
+  const [deviceId, setDeviceId] = useState<string>('');
+  const [warehouseSessionId, setWarehouseSessionId] = useState<string>('');
 
   const track = useCallback(
     <T extends Record<string, AnalyticsValue>>(
       event: string,
       additionalData: AnalyticsData<T> = {} as AnalyticsData<T>
     ) => {
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && deviceId && warehouseSessionId) {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event,
-          url: pathname,
-          timestamp: new Date().toISOString(),
+          event_time: new Date().toISOString(),
+          browser: navigator.userAgent,
+          device_id: deviceId,
+          warehouse_session_id: warehouseSessionId,
+          warehouse_zone: '000',
           ...additionalData,
         });
-        logToConsole(event, additionalData, pathname);
+
+        logToConsole(event, {
+          browser: navigator.userAgent,
+          device_id: deviceId,
+          warehouse_session_id: warehouseSessionId,
+          warehouse_zone: '000',
+          ...additionalData,
+        }, pathname);
       }
     },
-    [pathname]
+    
+    [deviceId, pathname, warehouseSessionId]
   );
+
+  useEffect(() => {
+    const initializeIds = async () => {
+      if (typeof window === "undefined") return "";
+      try {
+        const fpPromise = FingerprintJS.load();
+        const fp = await fpPromise;
+        const result = await fp.get();
+        setDeviceId(result.visitorId);
+
+        let warehouseSessionId = localStorage.getItem("warehouse_session_id");
+        if (!warehouseSessionId) {
+          warehouseSessionId = crypto.randomUUID();
+          localStorage.setItem("warehouse_session_id", warehouseSessionId);
+        }
+
+        setWarehouseSessionId(warehouseSessionId);
+      } catch (error) {
+        console.error("Error initializing analytics IDs:", error);
+      }
+    };
+  
+    initializeIds();
+  }, []);
 
   return { track };
 };
