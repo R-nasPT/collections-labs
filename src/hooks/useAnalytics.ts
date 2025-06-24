@@ -124,62 +124,73 @@ const logToConsole = useCallback((event: string, data: Record<string, AnalyticsV
         // ================================================ Analytics ================================================
 const useAnalytics = (): UseAnalyticsReturn => {
   const pathname = usePathname();
-  const [deviceId, setDeviceId] = useState<string>('');
-  const [warehouseSessionId, setWarehouseSessionId] = useState<string>('');
+  const [analytics, setAnalytics] = useState<{
+    deviceId: string;
+    warehouseSessionId: string | null;
+  } | null>(null);
+
+  const initializeAnalytics = useCallback(async () => {
+    if (typeof window === "undefined") return null;
+    
+    try {
+      const fpPromise = FingerprintJS.load();
+      const fp = await fpPromise;
+      const result = await fp.get();
+
+      const isSigningOut = localStorage.getItem("is_signing_out") === "true";
+      
+      let warehouseSessionId = localStorage.getItem("warehouse_session_id");
+      if (!warehouseSessionId && !isSigningOut) {
+        warehouseSessionId = crypto.randomUUID();
+        localStorage.setItem("warehouse_session_id", warehouseSessionId);
+      }
+
+      const analyticsData = {
+        deviceId: result.visitorId,
+        warehouseSessionId
+      };
+      
+      setAnalytics(analyticsData);
+      return analyticsData;
+    } catch (error) {
+      console.error("Error initializing analytics:", error);
+      return null;
+    }
+  }, []);
 
   const track = useCallback(
-    <T extends Record<string, AnalyticsValue>>(
+    async <T extends Record<string, AnalyticsValue>>(
       event: string,
       additionalData: AnalyticsData<T> = {} as AnalyticsData<T>
     ) => {
-      if (typeof window !== "undefined" && deviceId && warehouseSessionId) {
+      const currentAnalytics = analytics || await initializeAnalytics();
+
+      if (typeof window !== "undefined" && currentAnalytics) {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event,
           event_time: new Date().toISOString(),
           browser: navigator.userAgent,
-          device_id: deviceId,
-          warehouse_session_id: warehouseSessionId,
+          device_id: currentAnalytics.deviceId,
+          warehouse_session_id: currentAnalytics.warehouseSessionId,
           warehouse_zone: '000',
+          shift: 'NORMAL',
           ...additionalData,
         });
 
         logToConsole(event, {
           browser: navigator.userAgent,
-          device_id: deviceId,
-          warehouse_session_id: warehouseSessionId,
+          device_id: currentAnalytics.deviceId,
+          warehouse_session_id: currentAnalytics.warehouseSessionId,
           warehouse_zone: '000',
+          shift: 'NORMAL',
           ...additionalData,
         }, pathname);
       }
     },
     
-    [deviceId, pathname, warehouseSessionId]
+    [analytics, initializeAnalytics, pathname]
   );
-
-  useEffect(() => {
-    const initializeIds = async () => {
-      if (typeof window === "undefined") return "";
-      try {
-        const fpPromise = FingerprintJS.load();
-        const fp = await fpPromise;
-        const result = await fp.get();
-        setDeviceId(result.visitorId);
-
-        let warehouseSessionId = localStorage.getItem("warehouse_session_id");
-        if (!warehouseSessionId) {
-          warehouseSessionId = crypto.randomUUID();
-          localStorage.setItem("warehouse_session_id", warehouseSessionId);
-        }
-
-        setWarehouseSessionId(warehouseSessionId);
-      } catch (error) {
-        console.error("Error initializing analytics IDs:", error);
-      }
-    };
-  
-    initializeIds();
-  }, []);
 
   return { track };
 };
