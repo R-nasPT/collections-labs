@@ -249,3 +249,49 @@ export const sortBy = <T, K extends keyof T>(
   });
   // ผลลัพธ์: [{ name: 'John', role: 'admin' }, { name: 'Jane', role: 'user' }]
 */
+
+
+// =========== perfect ===========
+// Type helpers for strict typing
+type SortableValue = string | number | boolean | null | undefined;
+
+type SortableKey<T> = {
+  [K in keyof T]: T[K] extends SortableValue ? K : never;
+}[keyof T];
+
+export const sortBy = <T, K extends SortableKey<T>>(
+  items: T[],
+  key: K,
+  direction: 'asc' | 'desc' = 'asc',
+  nullPosition: 'first' | 'last' = 'last'
+): T[] => {
+  if (!items) return [];
+  
+  return [...items].sort((a, b) => {
+    const valueA = a[key];
+    const valueB = b[key];
+
+    // Handle null/undefined values
+    if (valueA === null && valueB === null) return 0;
+    if (valueA === undefined && valueB === undefined) return 0;
+    if (valueA === null || valueA === undefined) return nullPosition === 'first' ? -1 : 1;
+    if (valueB === null || valueB === undefined) return nullPosition === 'first' ? 1 : -1;
+
+    let result: number;
+    
+    // Number comparison
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      result = valueA - valueB;
+    }
+    // Boolean comparison
+    else if (typeof valueA === 'boolean' && typeof valueB === 'boolean') {
+      result = valueA === valueB ? 0 : valueA ? 1 : -1;
+    }
+    // String comparison (fallback)
+    else {
+      result = String(valueA).localeCompare(String(valueB));
+    }
+    
+    return direction === 'desc' ? -result : result;
+  });
+};
