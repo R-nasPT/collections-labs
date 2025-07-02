@@ -173,3 +173,79 @@ const events = [
 ];
 sortByDate(events, 'date', 'desc');
 */
+
+
+
+
+export const sortBy = <T, K extends keyof T>(
+  items: T[],
+  key: K,
+  direction: 'asc' | 'desc' = 'asc',
+  options?: {
+    nullAs?: 'min' | 'max'; // กำหนดให้ `null/undefined` ถูกเรียงไว้ต้นสุดหรือท้ายสุด
+    compareFn?: (a: T[K], b: T[K]) => number; // ฟังก์ชันเปรียบเทียบแบบกำหนดเอง
+  }
+): T[] => {
+  if (!items) return [];
+
+  return [...items].sort((a, b) => {
+    const valueA = a[key];
+    const valueB = b[key];
+
+    // 1. จัดการ `null/undefined` ตาม options
+    if (valueA == null || valueB == null) {
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return options?.nullAs === 'max' ? 1 : -1;
+      if (valueB == null) return options?.nullAs === 'max' ? -1 : 1;
+    }
+
+    // 2. ใช้ compareFn ที่ผู้ใช้กำหนด (ถ้ามี)
+    if (options?.compareFn) {
+      return direction === 'desc' 
+        ? -options.compareFn(valueA, valueB) 
+        : options.compareFn(valueA, valueB);
+    }
+
+    // 3. เปรียบเทียบตามประเภทข้อมูลอัตโนมัติ
+    let result: number;
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      result = valueA - valueB;
+    } else if (valueA instanceof Date && valueB instanceof Date) {
+      result = valueA.getTime() - valueB.getTime();
+    } else {
+      result = String(valueA).localeCompare(String(valueB));
+    }
+
+    return direction === 'desc' ? -result : result;
+  });
+};
+// ---- examp ----
+/*
+  const numbers = [{ id: 3 }, { id: 1 }, { id: 2 }];
+  const sorted = sortBy(numbers, 'id'); // [{ id: 1 }, { id: 2 }, { id: 3 }]
+
+  const dates = [
+  { date: new Date('2023-01-01') },
+  { date: new Date('2022-01-01') },
+];
+  const sorted = sortBy(dates, 'date'); // เรียงจากวันที่เก่าที่สุด
+
+  const data = [
+  { name: 'B', age: null },
+  { name: 'A', age: 20 },
+];
+  const sorted = sortBy(data, 'age', 'asc', { nullAs: 'max' });
+  // ผลลัพธ์: [{ name: 'A', age: 20 }, { name: 'B', age: null }]
+
+  const users = [
+  { name: 'John', role: 'admin' },
+  { name: 'Jane', role: 'user' },
+];
+  const sorted = sortBy(users, 'role', 'asc', {
+    compareFn: (a, b) => {
+      const priority = { admin: 1, user: 2 };
+      return priority[a] - priority[b];
+    },
+  });
+  // ผลลัพธ์: [{ name: 'John', role: 'admin' }, { name: 'Jane', role: 'user' }]
+*/
