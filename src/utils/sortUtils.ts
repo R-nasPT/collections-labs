@@ -98,14 +98,26 @@ export const sortByNumber = <T, K extends keyof T>(
 // 7. Date sorting
 export const sortByDate = <T, K extends keyof T>(
   items: T[],
-  key: K,
+  key: K extends keyof T
+    ? T[K] extends string | number | Date | null | undefined
+      ? K
+      : never
+    : never,
   direction: 'asc' | 'desc' = 'asc'
 ): T[] => {
   if (!items) return [];
+
   return [...items].sort((a, b) => {
-    const dateA = new Date(a[key] as any).getTime() || 0;
-    const dateB = new Date(b[key] as any).getTime() || 0;
-    const result = dateA - dateB;
+    const valueA = a[key];
+    const valueB = b[key];
+
+    const dateA = valueA instanceof Date ? valueA : new Date(valueA as string | number);
+    const dateB = valueB instanceof Date ? valueB : new Date(valueB as string | number);
+
+    const timeA = !isNaN(dateA.getTime()) ? dateA.getTime() : 0;
+    const timeB = !isNaN(dateB.getTime()) ? dateB.getTime() : 0;
+
+    const result = timeA - timeB;
     return direction === 'desc' ? -result : result;
   });
 };
