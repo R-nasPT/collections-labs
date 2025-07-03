@@ -22,3 +22,17 @@ export const focusElement = (selector: string, useId: boolean = false): boolean 
     return false;
   }
 };
+
+
+
+// ใช้ querySelector (default)
+focusElement('input[placeholder="Barcode สินค้า"]');
+
+// ใช้ getElementById
+focusElement('barcode-input', true);
+
+// ตัวอย่างอื่นๆ
+focusElement('input[name="username"]');           // querySelector
+focusElement('[data-testid="search-input"]');     // querySelector
+focusElement('.my-input');                        // querySelector
+focusElement('my-element-id', true);              // getElementById
