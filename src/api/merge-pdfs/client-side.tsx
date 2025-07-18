@@ -1,4 +1,4 @@
-============= hook ==============
+// ====================== hook ======================
 import { useMutation } from '@tanstack/react-query';
 
 const mergePdfs = async (pdfUrls: string[]) => {
@@ -24,23 +24,60 @@ const mergePdfs = async (pdfUrls: string[]) => {
     throw new Error('ไฟล์ PDF ที่ merge แล้วมีขนาด 0 bytes');
   }
 
-  return mergedBlob;
+  return {
+    blob: mergedBlob,
+    url: URL.createObjectURL(mergedBlob),
+  };
 };
 
 export const useMergePdfs = () => {
-  return useMutation<Blob, Error, string[]>({
+  return useMutation<{ blob: Blob; url: string }, Error, string[]>({
     mutationFn: mergePdfs,
     onSuccess: (data) => {
-      console.info('PDF merge successful, blob size:', data.size);
+      console.info('PDF merge successful, blob size:', data.blob.size);
     },
     onError: (error) => {
       console.error('Error during PDF merge:', error);
     },
   });
 };
+// ================== utility function ======================
+
+export const printPdfViaIframe = (url: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        try {
+          // พิมพ์และทำความสะอาด
+          iframe.contentWindow?.print();
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+            URL.revokeObjectURL(url);
+            resolve();
+          }, 1000); // รอให้พิมพ์เสร็จก่อนลบ
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      iframe.onerror = () => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+        reject(new Error('Failed to load PDF'));
+      };
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 
-================== component ======================
+// ================== component ======================
 'use client';
 
 import type { DeliveryOrderTypes } from '@/types';
@@ -55,9 +92,102 @@ export default function BatchPickContainer() {
 
   const printRef = useRef<HTMLIFrameElement>(null);
 
+const handleComplete = async () => {
+    if (!orders || orders.length === 0) {
+      showNotification('ไม่พบข้อมูล orders', 'error');
+      return;
+    }
 
+    const fulfillmentBody: FulfillmentRequest[] = orders?.map((order) => ({
+      deliveryOrderId: order.id,
+      pickStaffCode: session!.user.id,
+      items:
+        order.items?.map(item => {
+          return {
+            ...item,
+            id: item.itemId,
+          };
+        }) || [],
+      station: 'Pick',
+      type: 'DeliveryOrder',
+      userId: session!.user.id,
+      accountId: order.accountId,
+      properties: order.properties,
+    }));
 
+    await createFulfillments(fulfillmentBody, {
+      onSuccess: async () => {
+        if (isMarketplace) {
+          const pdfUrls = orders
+            .map(order => {
+              if (
+                order.attachments &&
+                Array.isArray(order.attachments) &&
+                order.attachments.length > 0 &&
+                order.attachments[0]?.link
+              ) {
+                return order.attachments[0].link;
+              } else {
+                console.warn(`Order ${order.id} has no valid attachment link`);
+                showNotification(`Order ${order.id} ไม่มีไฟล์ PDF แนบ`, 'warning');
+                return null;
+              }
+            })
+            .filter(url => url !== null);
 
+          if (pdfUrls.length === 0) {
+            showNotification('ไม่พบไฟล์ PDF ที่จะพิมพ์', 'error');
+            return;
+          }
+
+          const { url } = await mergePdfs(pdfUrls);
+          mergedPdfRef.current = url;
+          handlePrint();
+        } else {
+          const deliveryOrderIds = orders.map(order => order.id);
+          await fetchFulfillment(deliveryOrderIds, {
+            onSuccess: (data) => {
+              fulfillmentRef.current = data;
+              handlePrint();
+            }
+          });
+        }
+      },
+      onError: (error) => {
+        console.error('Error creating fulfillments:', error);
+        showNotification('เกิดข้อผิดพลาดในการสร้าง fulfillments', 'error');
+      }
+    });
+  };
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    onAfterPrint: async () => {
+      if (isMarketplace) {
+        try {
+          if (!mergedPdfRef.current) return;
+          await printPdfViaIframe(mergedPdfRef.current);
+        } catch (error) {
+          console.error('Error printing merged PDF:', error);
+          let errorMessage = 'An unknown error occurred';
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          showNotification(`เกิดข้อผิดพลาดในการพิมพ์: ${errorMessage}`, 'error');
+        }
+      } else {
+        setTimeout(() => {
+          printShippingLabel();
+        }, 500);
+      }
+    },
+  });
+
+  const printShippingLabel = useReactToPrint({
+    contentRef: shippingRef,
+  });
+
+/* ======================= เลิกใช้ ==========================
   // ฟังก์ชันสำหรับการพิมพ์
   const handlePrint = async () => {
   if (!orders || orders.length === 0) {
@@ -93,7 +223,7 @@ export default function BatchPickContainer() {
 
     console.log(`Found ${pdfUrls.length} PDF URLs to merge`);
 
-    /// ใช้ hook สำหรับ merge PDFs
+    // ใช้ hook สำหรับ merge PDFs
       const mergedBlob = await mergePdfs(pdfUrls);
 
     // สร้าง URL สำหรับ merged PDF
@@ -125,6 +255,8 @@ showNotification(`พิมพ์ไฟล์ PDF สำเร็จ (${pdfUrls.
     };
   }, [mergedPdfUrl]);
 
+  ======================================================== */
+
   return (
     <>
       
@@ -146,8 +278,8 @@ showNotification(`พิมพ์ไฟล์ PDF สำเร็จ (${pdfUrls.
           </Button>
   
 
-  
-
+{/*   
+================ เลิกใช้ ===============
       {mergedPdfUrl && (
         <iframe
           ref={printRef}
@@ -156,7 +288,7 @@ showNotification(`พิมพ์ไฟล์ PDF สำเร็จ (${pdfUrls.
           title="Print Document"
         />
       )}
-
+================ เลิกใช้ =============== */}
 
     </>
   );
