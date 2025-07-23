@@ -1,0 +1,46 @@
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { FlatCompat } from '@eslint/eslintrc';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  {
+    rules: {
+      eqeqeq: ['warn', 'always'],
+      semi: ['warn', 'always'],
+      'react/self-closing-comp': 'warn',
+      'react/jsx-curly-brace-presence': [
+        'warn',
+        { props: 'never', children: 'never' },
+      ],
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+        },
+      ],
+      // Add rules for unused variables
+      'no-unused-vars': 'off', //  ปิดกฎพื้นฐานของ ESLint เพื่อหลีกเลี่ยงการขัดแย้งกับเวอร์ชันของ TypeScript
+      '@typescript-eslint/no-unused-vars': [ // เปิดใช้งานกฎเฉพาะของ TypeScript โดยตั้งค่าระดับความรุนแรงเป็น error
+        'error',
+        {
+          vars: 'all', // ตรวจสอบตัวแปรทั้งหมดว่าถูกใช้งานหรือไม่
+          args: 'after-used', // แจ้งเตือนเฉพาะ argument ที่ไม่ได้ใช้ซึ่งอยู่หลัง argument ตัวสุดท้ายที่ถูกใช้
+          ignoreRestSiblings: true, // ไม่สนใจ rest siblings ใน object destructuring (มีประโยชน์สำหรับการละเว้น properties)
+          varsIgnorePattern: '^_', // ไม่สนใจตัวแปรที่ขึ้นต้นด้วย underscore (เป็นแนวทางทั่วไปสำหรับตัวแปรที่ตั้งใจไม่ใช้)
+          argsIgnorePattern: '^_', // ไม่สนใจ function arguments ที่ขึ้นต้นด้วย underscore
+        },
+      ],
+    },
+  },
+];
+
+export default eslintConfig;
