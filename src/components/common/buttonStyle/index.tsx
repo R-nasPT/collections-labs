@@ -166,3 +166,58 @@ export function ButtonFifthStyle() {
     </button>
   );
 }
+// ======================== Sixth ============================
+export function ButtonFifthStyle() {
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isKeycloakLoading, setIsKeycloakLoading] = useState(false);
+  
+  const handleKeycloakLogin = async () => {
+    setIsKeycloakLoading(true);
+    setErrorMsg('');
+    
+    try {
+      await signIn('keycloak', { 
+        callbackUrl: '/dashboard',
+        redirect: true 
+      });
+      track('keycloak_login_initiated');
+    } catch (error) {
+      setErrorMsg('SSO login failed');
+      setIsKeycloakLoading(false);
+    }
+  };
+  return (
+    <div className="mt-6 flex w-full justify-center px-10 lg:px-20">
+            <button
+              onClick={handleKeycloakLogin}
+              disabled={isKeycloakLoading}
+              className={`group relative flex w-full items-center justify-center overflow-hidden rounded-full border-2 border-indigo-600 bg-white py-3 text-indigo-600 transition-all duration-300 md:w-1/2 ${
+                isKeycloakLoading
+                  ? 'cursor-default opacity-50'
+                  : 'cursor-pointer hover:text-white'
+              }`}
+            >
+              <span
+                className={`absolute inset-0 h-full w-full -translate-x-full transform bg-indigo-600 transition-transform duration-300 ease-out ${
+                  !isKeycloakLoading && 'group-hover:translate-x-0'
+                }`}
+               />
+              <span className="relative flex items-center font-medium">
+                {isKeycloakLoading && (
+                  <LoadingIcon className="me-3 inline h-5 w-5 animate-spin" />
+                )}
+                <svg
+                  className="mr-2 h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+                {isKeycloakLoading
+                  ? 'Signing in...'
+                  : 'Sign in with SSO'}
+              </span>
+            </button>
+          </div>
+  );
+}
