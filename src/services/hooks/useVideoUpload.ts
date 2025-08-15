@@ -1,16 +1,32 @@
 import type { MediaUploadResponse } from '@/types';
 import { useMutation } from '@tanstack/react-query';
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { BlobServiceClient } from '@azure/storage-blob';
 import { NEXT_PUBLIC_AZURE_STORAGE_CONNECTION_STRING, NEXT_PUBLIC_AZURE_STORAGE_CONTAINER_NAME } from '@/config/env';
 
 export const useVideoUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const progressRef = useRef(0);
-  const animationFrameRef = useRef<number>(0);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+
+  // Cleanup function ที่ใช้ทั่วไป
+  const cleanup = useCallback(() => {
+    if (animationFrameRef.current !== undefined) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = undefined;
+    }
+    progressRef.current = 0;
+    setUploadProgress(0);
+  }, []);
+
+  // Cleanup เมื่อ component unmount
+  useEffect(() => {
+    return cleanup; // จะถูกเรียกเมื่อ component unmount
+  }, [cleanup]);
 
   const smoothUpdateProgress = useCallback((targetProgress: number) => {
-    if (animationFrameRef.current) {
+    // หยุด animation เก่าก่อนเริ่มใหม่
+    if (animationFrameRef.current !== undefined) {
       cancelAnimationFrame(animationFrameRef.current);
     }
 
@@ -21,6 +37,7 @@ export const useVideoUpload = () => {
       if (Math.abs(diff) < 0.1) {
         progressRef.current = targetProgress;
         setUploadProgress(Math.round(targetProgress));
+        animationFrameRef.current = undefined; // เคลียร์เมื่อจบ
         return;
       }
 
@@ -38,7 +55,8 @@ export const useVideoUpload = () => {
   const mutation = useMutation<MediaUploadResponse, Error, File>({
     mutationFn: async (file: File) => {
       try {
-        // Reset progress
+        // Reset progress และ cleanup animation เก่า
+        cleanup();
         progressRef.current = 0;
         setUploadProgress(0);
 
@@ -64,6 +82,8 @@ export const useVideoUpload = () => {
         const baseTime = 2000; // 2 วินาทีพื้นฐาน
         const additionalTime = Math.min(fileSizeMB * 200, 8000); // เพิ่มสูงสุด 8 วินาที
         const minUploadDuration = baseTime + additionalTime;
+        
+        console.log(`File size: ${fileSizeMB.toFixed(1)}MB, Min duration: ${minUploadDuration}ms`);
         
         const uploadStartTime = Date.now();
         let lastAzureProgress = 0;
@@ -157,39 +177,27 @@ export const useVideoUpload = () => {
 
       } catch (error) {
         console.error('❌ Azure SDK upload error:', error);
+        cleanup(); // cleanup เมื่อเกิด error
         throw new Error('Header issue persists. Try older Azure SDK version (12.27.0 or older)');
       }
     },
     onSuccess: (data) => {
       console.info('🎉 Upload succeeded with clean Azure SDK:', data);
-      // รอให้ user เห็น 100% นานหน่อย
+      // รอให้ user เห็น 100% นานหน่อย แล้วค่อย cleanup
       setTimeout(() => {
-        progressRef.current = 0;
-        setUploadProgress(0);
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
+        cleanup();
       }, 2000); // เพิ่มเวลาให้เห็น 100% นานขึ้น
     },
     onError: (error) => {
       console.error('💥 Upload failed:', error);
       setTimeout(() => {
-        progressRef.current = 0;
-        setUploadProgress(0);
+        cleanup();
       }, 1000);
     },
   });
 
-  // Cleanup function
-  const cleanup = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-  }, []);
-
   return {
     ...mutation,
     uploadProgress,
-    cleanup,
   };
 };
