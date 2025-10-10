@@ -29,6 +29,22 @@ const routeLabels = {
   'delivery-orders': 'Breadcrumb',
 };
 
+// กำหนด pattern สำหรับ resource ที่มี dynamic ID
+const resourcePatterns = [
+  'delivery-orders',
+  'purchase-orders',
+  'products',
+  'categories',
+  'invoices',
+  'customers',
+  'orders',
+  'users',
+  // เพิ่ม resources ที่มี ID ต่อท้าย
+];
+
+// segments ที่เป็น action (ไม่ใช่ ID)
+const knownActions = ['edit', 'view', 'new', 'create', 'delete', 'settings'];
+
 export default function Navbar() {
   const location = useLocation();
 
@@ -46,9 +62,24 @@ export default function Navbar() {
     // สร้าง items สำหรับแต่ละ segment
     paths.forEach((segment, index) => {
       const path = '/' + paths.slice(0, index + 1).join('/');
-      const label =
-        routeLabels[segment as keyof typeof routeLabels] ||
-        segment.charAt(0).toUpperCase() + segment.slice(1);
+      const previousSegment = index > 0 ? paths[index - 1] : undefined;
+
+      let label;
+
+      const isIdSegment = previousSegment && 
+                         resourcePatterns.includes(previousSegment) && 
+                         !knownActions.includes(segment) &&
+                         !routeLabels[segment as keyof typeof routeLabels];
+
+      if (isIdSegment) {
+        // แสดง ID แบบสั้นถ้ายาวเกินไป
+        const displayId = segment.length > 10 ? `${segment.slice(0, 8)}...` : segment;
+        label = `#${displayId}`;
+      } else {
+        // ใช้ label จาก routeLabels หรือ capitalize
+        label = routeLabels[segment as keyof typeof routeLabels] ||
+                segment.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      }
 
       items.push({
         label,
