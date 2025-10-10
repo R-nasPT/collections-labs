@@ -73,7 +73,8 @@ export default function Navbar() {
 
       if (isIdSegment) {
         // แสดง ID แบบสั้นถ้ายาวเกินไป
-        const displayId = segment.length > 10 ? `${segment.slice(0, 8)}...` : segment;
+        const displayId = segment.length > 10 ? `${segment.slice(0, 8)}...` : segment; //<-- เพิ่ม ลด จำนวนได้
+                          segment.length > 20 ? `${segment.slice(0, 19)}...` : segment;
         label = `#${displayId}`;
       } else {
         // ใช้ label จาก routeLabels หรือ capitalize
