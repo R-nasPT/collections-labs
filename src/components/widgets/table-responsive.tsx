@@ -260,7 +260,7 @@ export default function SkuManagementPage() {
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${getBadgeClasses(product.categoryColor)}`}
+                      className={`rounded-full px-3 py-1 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200 border border-sky-200 dark:border-sky-700`}
                     >
                       {product.category}
                     </span>
@@ -316,7 +316,7 @@ export default function SkuManagementPage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${getBadgeClasses(product.categoryColor)}`}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200 border border-sky-200 dark:border-sky-700`}
                     >
                       {product.category}
                     </span>
