@@ -24,6 +24,7 @@ interface AccountComboboxProps<T extends boolean = false> {
     : (accountId: string) => void; // ส่งได้ทั้ง 2 แบบ
   disabled?: boolean;
   returnObject?: T; // บอกว่าจะ return object หรือ string
+  className?: string;
 }
 
 /* ---------- Function overload declarations ---------- ไม่มีก็ยังไม่เห็นปัญหานะ น่าจะไม่มีก็ได้*/ 
@@ -39,6 +40,7 @@ export default function AccountCombobox<T extends boolean = false>({
   onChange,
   disabled,
   returnObject,
+  className
 }: AccountComboboxProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchName, setSearchName] = useState('');
@@ -122,14 +124,45 @@ export default function AccountCombobox<T extends boolean = false>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={cn(
+            'w-[200px] justify-between transition-all duration-200',
+            'hover:shadow-sm focus:ring-2 focus:ring-primary/20',
+            'border-border/60 hover:border-border',
+            className,
+            disabled && 'cursor-not-allowed opacity-50',
+            selectedAccount && 'border-primary/30 bg-secondary/50'
+          )}
           disabled={disabled}
         >
-          {selectedAccount ? selectedAccount.name : 'Select account...'}
-          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <Store className="h-4 w-4 shrink-0 text-muted-foreground" />
+
+            {/* ชื่อ account ที่ถูกเลือก */}
+            <span
+              className={cn(
+                'flex-1 truncate text-left',
+                selectedAccount
+                  ? 'font-medium text-foreground'
+                  : 'text-muted-foreground'
+              )}
+            >
+              {selectedAccount ? selectedAccount.name : 'Select account...'}
+            </span>
+          </div>
+
+          {/* Chevron icon ที่มีการ animate เมื่อเปิด */}
+          <ChevronsUpDownIcon
+            className={cn(
+              'h-4 w-4 shrink-0 opacity-60 transition-transform duration-200',
+              open && 'rotate-180'
+            )}
+          />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent
+        className="w-(--radix-popover-trigger-width) p-0"
+        align="start"
+      >
         <Command>
           <CommandInput
             placeholder="Search account..."
@@ -138,15 +171,36 @@ export default function AccountCombobox<T extends boolean = false>({
           />
           <CommandList onScrollCapture={handleScroll}>
             {isLoading && (
-              <div className="flex items-center justify-center py-6">
+              <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Loading accounts...
+                </span>
               </div>
             )}
 
-            {isError && <CommandEmpty>Error loading accounts.</CommandEmpty>}
+            {isError && (
+              <CommandEmpty className="py-6">
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-destructive">
+                    Error loading accounts
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Please try again
+                  </span>
+                </div>
+              </CommandEmpty>
+            )}
 
             {!isLoading && accounts.length === 0 && (
-              <CommandEmpty>No account found.</CommandEmpty>
+              <CommandEmpty className="py-6">
+                <div className="flex flex-col items-center gap-2">
+                  <Store className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    No account found
+                  </span>
+                </div>
+              </CommandEmpty>
             )}
 
             {!isLoading && accounts.length > 0 && (
@@ -156,6 +210,7 @@ export default function AccountCombobox<T extends boolean = false>({
                     key={account.id}
                     value={account.name}
                     onSelect={() => handleSelect(account)}
+                    className="cursor-pointer"
                   >
                     <CheckIcon
                       className={cn(
@@ -168,8 +223,11 @@ export default function AccountCombobox<T extends boolean = false>({
                 ))}
 
                 {isFetchingNextPage && (
-                  <div className="flex items-center justify-center py-2">
+                  <div className="flex items-center justify-center py-3">
                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      Loading more...
+                    </span>
                   </div>
                 )}
               </CommandGroup>
