@@ -7,7 +7,6 @@ import TextAnimate from "./pages/TextAnimate";
 
 function App() {
   return (
-    <>
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/heroes" element={<HeroList />} />
@@ -15,7 +14,6 @@ function App() {
         <Route path="/muti-api" element={<MutiApi />} />
         <Route path="/text-animate" element={<TextAnimate />} />
       </Routes>
-    </>
   );
 }
 
