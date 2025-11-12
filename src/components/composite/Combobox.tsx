@@ -1,6 +1,6 @@
 import type { Identity } from '@/shared/types';
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type JSX } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/Popover';
 import { Button } from '../ui/Button';
 import {
@@ -19,6 +19,7 @@ import {
 } from '../ui/Command';
 import { cn } from '@/shared/lib';
 
+/* ---------- Shared props type ---------- */
 type ComboboxValue<T extends boolean> = T extends true
   ? Identity | null
   : string | null;
@@ -50,6 +51,14 @@ interface GenericComboboxProps<T extends boolean = false> extends ComboboxProps<
   }>;
 }
 
+/* ---------- Function overload declarations ---------- ไม่มีก็ยังไม่เห็นปัญหานะ น่าจะไม่มีก็ได้*/ 
+export function Combobox(
+  props: GenericComboboxProps<false>
+): JSX.Element;
+export function Combobox(
+  props: GenericComboboxProps<true>
+): JSX.Element;
+
 export default function Combobox<T extends boolean = false>({
   value,
   onChange,
@@ -68,6 +77,7 @@ export default function Combobox<T extends boolean = false>({
   const [searchName, setSearchName] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
+  // Use the infinite query hook with search parameter
   const {
     data,
     fetchNextPage,
@@ -77,21 +87,25 @@ export default function Combobox<T extends boolean = false>({
     isError,
   } = useInfiniteQuery(debouncedSearch);
 
+  // Flatten all pages into a single array
   const items = useMemo(() => {
     return data?.pages.flatMap((page) => page.data) ?? [];
   }, [data]);
 
+  // แปลง value เป็น id
   const selectedId = useMemo(() => {
     if (!value) return null;
     return typeof value === 'string' ? value : value.id;
   }, [value]);
 
+  // หา item จาก id
   const selectedItem = useMemo(() => {
     if (!selectedId) return null;
     return items.find((item) => item.id === selectedId);
   }, [selectedId, items]);
 
   const handleSelect = (item: Identity) => {
+    // Clear selection
     if (selectedId === item.id) {
       if (returnObject) {
         (onChange as (item: Identity | null) => void)?.(null);
@@ -99,6 +113,7 @@ export default function Combobox<T extends boolean = false>({
         (onChange as (itemId: string) => void)?.('');
       }
     } else {
+      // Select new account
       if (returnObject) {
         (onChange as (item: Identity | null) => void)?.({
           id: item.id,
@@ -111,11 +126,13 @@ export default function Combobox<T extends boolean = false>({
     setOpen(false);
   };
 
+  // Handle scroll for infinite loading
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const scrollPercentage =
       (target.scrollTop + target.clientHeight) / target.scrollHeight;
 
+      // Load more when scrolled to 80%
     if (scrollPercentage > 0.8 && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
