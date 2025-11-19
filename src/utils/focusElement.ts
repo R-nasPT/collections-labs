@@ -4,7 +4,9 @@
  * @param useId - If true, uses getElementById, otherwise uses querySelector
  * @returns boolean - true if element was found and focused, false otherwise
  */
+
 interface FocusOptions {
+  useId?: boolean;
   scroll?: boolean;
   scrollOptions?: ScrollIntoViewOptions;
   focusDelay?: number;
@@ -12,11 +14,10 @@ interface FocusOptions {
 
 export const focusElement = (
   selector: string,
-  useId: boolean = false,
   options?: FocusOptions
 ): boolean => {
   try {
-    const element = useId
+    const element = options?.useId
       ? (document.getElementById(selector) as HTMLElement)
       : (document.querySelector(selector) as HTMLElement);
 
@@ -26,11 +27,13 @@ export const focusElement = (
     }
 
     if (options?.scroll) {
-      element.scrollIntoView(options.scrollOptions || {
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest'
-      });
+      element.scrollIntoView(
+        options.scrollOptions || {
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest',
+        }
+      );
 
       setTimeout(() => {
         element.focus();
@@ -49,14 +52,15 @@ export const focusElement = (
 
 
 
+
 // ใช้ querySelector (default)
 focusElement('input[placeholder="Barcode สินค้า"]');
 
 // ใช้ getElementById
-focusElement('barcode-input', true);
+focusElement('barcode-input', { useId: true, scroll: true );
 
 // ตัวอย่างอื่นๆ
 focusElement('input[name="username"]');           // querySelector
 focusElement('[data-testid="search-input"]');     // querySelector
 focusElement('.my-input');                        // querySelector
-focusElement('my-element-id', true);              // getElementById
+focusElement('my-element-id', { useId: true });   // getElementById
