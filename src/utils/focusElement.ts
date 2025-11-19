@@ -4,24 +4,48 @@
  * @param useId - If true, uses getElementById, otherwise uses querySelector
  * @returns boolean - true if element was found and focused, false otherwise
  */
-export const focusElement = (selector: string, useId: boolean = false): boolean => {
+interface FocusOptions {
+  scroll?: boolean;
+  scrollOptions?: ScrollIntoViewOptions;
+  focusDelay?: number;
+}
+
+export const focusElement = (
+  selector: string,
+  useId: boolean = false,
+  options?: FocusOptions
+): boolean => {
   try {
-    const element = useId 
-      ? document.getElementById(selector) as HTMLElement
-      : document.querySelector(selector) as HTMLElement;
-    
+    const element = useId
+      ? (document.getElementById(selector) as HTMLElement)
+      : (document.querySelector(selector) as HTMLElement);
+
     if (!element) {
       console.warn(`Element not found: ${selector}`);
       return false;
     }
-    
-    element.focus();
+
+    if (options?.scroll) {
+      element.scrollIntoView(options.scrollOptions || {
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+
+      setTimeout(() => {
+        element.focus();
+      }, options.focusDelay || 300);
+    } else {
+      element.focus();
+    }
+
     return true;
   } catch (error) {
     console.error('Error focusing element:', error);
     return false;
   }
 };
+
 
 
 
