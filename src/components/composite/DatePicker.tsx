@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import type { DateRange } from 'react-day-picker';
-import { format } from 'date-fns';
+import { endOfDay, format, startOfDay } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 import { Button } from './Button';
@@ -47,6 +47,20 @@ export function DatePicker({
   onSelect,
   ...props
 }: DatePickerProps) {
+  const handleRangeSelect = (range: DateRange | undefined) => {
+    if (!range || !range.from || !range.to) {
+      onSelect?.(undefined);
+      return;
+    }
+
+    const adjustedRange: DateRange = {
+      from: startOfDay(range.from),
+      to: endOfDay(range.to),
+    };
+
+    (onSelect as DatePickerRange['onSelect'])?.(adjustedRange);
+  };
+
   const getDisplayText = () => {
     if (mode === 'single') {
       if (selected && selected instanceof Date) {
@@ -99,7 +113,7 @@ export function DatePicker({
           <Calendar
             mode="range"
             selected={selected as DatePickerRange['selected']}
-            onSelect={onSelect as DatePickerRange['onSelect']}
+            onSelect={handleRangeSelect}
             disabled={disabled}
             {...(props as OmitDateProps<RangeDatePickerProps>)}
           />
@@ -108,6 +122,7 @@ export function DatePicker({
     </Popover>
   );
 }
+
 
 /* 
 ==========================================
