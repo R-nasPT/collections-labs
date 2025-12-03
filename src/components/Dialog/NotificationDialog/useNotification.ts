@@ -3,26 +3,48 @@ import { useState } from "react";
 type NotificationType = "info" | "success" | "warning" | "error";
 
 interface Notification {
-  message: string;
   type?: NotificationType;
+  title?: string;
+  message: React.ReactNode;
   isOpen: boolean;
+}
+
+interface ShowNotificationParams {
+  type?: NotificationType;
+  title?: string;
+  message: React.ReactNode;
+  duration?: number;
 }
 
 const useNotification = () => {
   const [notification, setNotification] = useState<Notification | null>(null);
 
   const showNotification = (
-    message: string,
-    type: NotificationType = "info",
+    typeOrParams: NotificationType | ShowNotificationParams,
+    message?: React.ReactNode,
     duration?: number
   ) => {
-    setNotification({ message, type, isOpen: true });
+    let config: ShowNotificationParams;
+
+    if (typeof typeOrParams === 'object' && 'message' in typeOrParams) {
+      config = typeOrParams;
+    } else {
+      config = {
+        type: typeOrParams as NotificationType,
+        message: message!,
+        duration,
+      };
+    }
+
+    const { type = 'info', title, message: msg, duration: dur } = config;
+    
+    setNotification({ message: msg, type, title, isOpen: true });
 
     // Optional: Auto-close notification after specified duration
-    if (duration !== undefined && duration > 0) {
+    if (dur !== undefined && dur > 0) {
       setTimeout(() => {
         setNotification((prev) => (prev ? { ...prev, isOpen: false } : null));
-      }, duration);
+      }, dur);
     }
   };
 
