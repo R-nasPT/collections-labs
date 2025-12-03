@@ -8,15 +8,17 @@ import { FiAlertCircle, FiCheckCircle, FiInfo, FiXCircle } from "@/lib/icons";
 type NotificationType = "info" | "success" | "warning" | "error";
 
 interface NotificationDialogProps {
-  message: string;
+  message: React.ReactNode;
   type?: NotificationType;
+  title?: string;
   open: boolean;
   onClose: () => void;
 }
 
 export default function NotificationDialog({
   open,
-  type,
+  type = 'info',
+  title,
   onClose,
   message,
 }: NotificationDialogProps) {
@@ -34,8 +36,18 @@ export default function NotificationDialog({
       info: "",
     };
 
-    const sound = new Audio(soundMap[type as keyof typeof soundMap]);
-    sound.play();
+    const soundSource = soundMap[type as keyof typeof soundMap];
+
+    if (soundSource) {
+      try {
+        const sound = new Audio(soundSource);
+        sound.play().catch((err) => {
+          console.error('Failed to play notification sound:', err);
+        });
+      } catch (error) {
+        console.error('Error creating audio:', error);
+      }
+    }
   };
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -109,18 +121,20 @@ export default function NotificationDialog({
     buttonColor,
   } = getIconConfig();
 
-  const getTitle = () => {
+  const getDefaultTitle = () => {
     switch (type) {
-      case "success":
-        return "Success";
-      case "warning":
-        return "Warning";
-      case "error":
-        return "Error";
+      case 'success':
+        return 'Success';
+      case 'warning':
+        return 'Warning';
+      case 'error':
+        return 'Error';
       default:
-        return "Information";
+        return 'Information';
     }
   };
+
+  const displayTitle = title || getDefaultTitle();
 
   return (
     <Dialog open={open} onClose={onClose} desktop="sm">
@@ -138,7 +152,7 @@ export default function NotificationDialog({
           </div>
         </div>
 
-        <h2 className={cn("text-2xl font-bold mb-4", color)}>{getTitle()}</h2>
+        <h2 className={cn("text-2xl font-bold mb-4", color)}>{displayTitle}</h2>
 
         <p className="mb-6 text-gray-700 text-base leading-relaxed">
           {message}
