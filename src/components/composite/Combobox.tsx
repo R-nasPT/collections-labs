@@ -29,16 +29,18 @@ type ComboboxOnChange<T extends boolean> = T extends true
   : (itemId: string) => void;
 
 export interface ComboboxProps<T extends boolean = false> {
+  id?: string;
   value?: ComboboxValue<T>;
   onChange?: ComboboxOnChange<T>;
   disabled?: boolean;
+  icon?: LucideIcon;
   returnObject?: T;
   className?: string;
+  'aria-invalid'?: boolean;
 }
 
 interface GenericComboboxProps<T extends boolean = false> extends ComboboxProps<T> {
   // Customization props
-  icon: LucideIcon;
   placeholder: string;
   searchPlaceholder: string;
   emptyMessage: string;
@@ -60,6 +62,7 @@ export function Combobox(
 ): JSX.Element;
 
 export default function Combobox<T extends boolean = false>({
+  id,
   value,
   onChange,
   disabled,
@@ -71,6 +74,7 @@ export default function Combobox<T extends boolean = false>({
   emptyMessage,
   loadingMessage,
   errorMessage,
+  'aria-invalid': ariaInvalid,
   useInfiniteQuery,
 }: GenericComboboxProps<T>) {
   const [open, setOpen] = useState(false);
@@ -150,13 +154,16 @@ export default function Combobox<T extends boolean = false>({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-invalid={ariaInvalid}
           className={cn(
-            'justify-between transition-all duration-200',
+            'w-[200px] justify-between transition-all duration-200',
             'hover:shadow-sm focus:ring-2 focus:ring-primary/20',
             'border-border/60 hover:border-border',
+            'aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
             className,
             disabled && 'cursor-not-allowed opacity-50',
             selectedItem && 'border-primary/30 bg-secondary/50'
@@ -164,7 +171,7 @@ export default function Combobox<T extends boolean = false>({
           disabled={disabled}
         >
           <div className="flex min-w-0 flex-1 items-center gap-2">
-            <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+            {Icon && <Icon className="size-4 shrink-0 text-muted-foreground" />}
 
             <span
               className={cn(
@@ -179,8 +186,9 @@ export default function Combobox<T extends boolean = false>({
           </div>
 
           <ChevronsUpDownIcon
+            aria-invalid={ariaInvalid}
             className={cn(
-              'h-4 w-4 shrink-0 opacity-60 transition-transform duration-200',
+              'h-4 w-4 shrink-0 opacity-60 transition-transform duration-200 aria-invalid:text-destructive',
               open && 'rotate-180'
             )}
           />
@@ -220,7 +228,7 @@ export default function Combobox<T extends boolean = false>({
             {!isLoading && items.length === 0 && (
               <CommandEmpty className="py-6">
                 <div className="flex flex-col items-center gap-2">
-                  <Icon className="h-8 w-8 text-muted-foreground" />
+                  {Icon && <Icon className="h-8 w-8 text-muted-foreground" />}
                   <span className="text-sm text-muted-foreground">
                     {emptyMessage}
                   </span>
