@@ -23,12 +23,14 @@ type SingleDatePickerProps = DatePickerSingle & {
   mode?: 'single';
   placeholder?: string;
   className?: string;
+  'aria-invalid'?: boolean;
 } & Omit<CalendarProps, 'mode' | 'selected' | 'onSelect'>;
 
 type RangeDatePickerProps = DatePickerRange & {
   mode: 'range';
   placeholder?: string;
   className?: string;
+  'aria-invalid'?: boolean;
 } & Omit<CalendarProps, 'mode' | 'selected' | 'onSelect'>;
 
 type OmitDateProps<T> = Omit<
@@ -45,6 +47,7 @@ export function DatePicker({
   disabled,
   selected,
   onSelect,
+  'aria-invalid': ariaInvalid,
   ...props
 }: DatePickerProps) {
   const handleRangeSelect = (range: DateRange | undefined) => {
@@ -90,9 +93,11 @@ export function DatePicker({
         <Button
           variant="outline"
           data-empty={isEmpty}
+          aria-invalid={ariaInvalid}
           disabled={typeof disabled === 'boolean' ? disabled : false}
           className={cn(
             'justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
+            'aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
             className
           )}
         >
