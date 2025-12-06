@@ -37,6 +37,7 @@ export interface ComboboxProps<T extends boolean = false> {
   returnObject?: T;
   className?: string;
   'aria-invalid'?: boolean;
+  renderItem?: (item: Identity) => string | ReactNode;
 }
 
 interface GenericComboboxProps<T extends boolean = false> extends ComboboxProps<T> {
@@ -75,6 +76,7 @@ export default function Combobox<T extends boolean = false>({
   loadingMessage,
   errorMessage,
   'aria-invalid': ariaInvalid,
+  renderItem,
   useInfiniteQuery,
 }: GenericComboboxProps<T>) {
   const [open, setOpen] = useState(false);
@@ -251,7 +253,7 @@ export default function Combobox<T extends boolean = false>({
                         selectedId === item.id ? 'opacity-100' : 'opacity-0'
                       )}
                     />
-                    {item.name}
+                    {renderItem ? renderItem(item) : item.name}
                   </CommandItem>
                 ))}
 
