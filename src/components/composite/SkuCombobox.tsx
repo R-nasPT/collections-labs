@@ -92,3 +92,64 @@ export default function SkuCombobox<TReturnObject extends ComboboxReturnMode = u
   }}
   returnObject="all-fields"
 />
+
+
+// ==================== API ========================
+
+import type { Sku } from '@/shared/types';
+import { skuKeys } from '@/shared/keys';
+import { apiClient, endpoints } from '@/shared/services/api';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+
+export type SkuWithAccountInfinite = Pick<
+  Sku,
+  'id' | 'name' | 'info' | 'code' | 'internalCode' | 'barcode'
+>[];
+
+const PER_PAGE = 50;
+const INITIAL_PAGE = 1;
+
+const fetchSkuWithAccount = async (
+  pageParam: number,
+  accountId: string,
+  searchName?: string
+) => {
+  const filters = [`active eq true`, `startswith(id,'${accountId}')`];
+
+  if (searchName) {
+    filters.push(`contains(name,'${searchName}')`);
+  }
+
+  const params: Record<string, unknown> = {
+    $select: 'id,code,name,internalCode,barcode',
+    $expand: 'info',
+    $skip: (pageParam - 1) * PER_PAGE,
+    $top: PER_PAGE,
+    $orderby: 'name asc',
+    $filter: filters.join(' and '),
+  };
+
+  const response = await apiClient.get<SkuWithAccountInfinite>(
+    endpoints.sku.getAll,
+    { params }
+  );
+
+  return {
+    data: response.data,
+    nextPage: response.data.length === PER_PAGE ? pageParam + 1 : undefined,
+  };
+};
+
+export const useSkuWithAccountInfinite = (
+  accountId: string,
+  searchName?: string
+) => {
+  return useInfiniteQuery({
+    queryKey: skuKeys.accountId(accountId),
+    queryFn: ({ pageParam }) =>
+      fetchSkuWithAccount(pageParam, accountId, searchName),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: INITIAL_PAGE,
+    enabled: !!accountId,
+  });
+};
