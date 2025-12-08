@@ -1,10 +1,24 @@
 import { Store } from 'lucide-react';
 import { useAccountsInfinite } from '@/shared/services/queries/account.queries';
-import Combobox, { type ComboboxProps } from './Combobox';
+import Combobox, {
+  type ComboboxProps,
+  type ComboboxReturnMode,
+} from '../ui/Combobox';
 
-export default function AccountCombobox<T extends boolean = false>(
-  props: ComboboxProps<T>
-) {
+type AccountComboboxProps<TReturnObject extends ComboboxReturnMode = undefined> = Omit<
+  ComboboxProps<TReturnObject, ReturnType<typeof useAccountsInfinite>>,
+  | 'icon'
+  | 'placeholder'
+  | 'searchPlaceholder'
+  | 'emptyMessage'
+  | 'loadingMessage'
+  | 'errorMessage'
+  | 'useInfiniteQuery'
+>;
+
+export default function AccountCombobox<
+  TReturnObject extends ComboboxReturnMode = undefined,
+>(props: AccountComboboxProps<TReturnObject>) {
   return (
     <Combobox
       {...props}
