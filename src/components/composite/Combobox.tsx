@@ -19,50 +19,67 @@ import {
 } from '../ui/Command';
 import { cn } from '@/shared/lib';
 
-/* ---------- Shared props type ---------- */
-type ComboboxValue<T extends boolean> = T extends true
-  ? Identity | null
-  : string | null;
+export type ComboboxReturnMode = 'id-only' | 'id-name' | 'all-fields' | undefined
 
-type ComboboxOnChange<T extends boolean> = T extends true
-  ? (item: Identity | null) => void
-  : (itemId: string) => void;
+// Helper type เพื่อดึงชนิดข้อมูลจาก useInfiniteQuery
+type InferQueryData<T> = T extends UseInfiniteQueryResult<infer R>
+  ? R extends { pages: Array<{ data: infer U extends Identity[] }> }
+    ? U[number]
+    : Identity
+  : Identity;
 
-export interface ComboboxProps<T extends boolean = false> {
+// Conditional types สำหรับ value และ onChange ตาม returnObject
+type ComboboxValue<
+  TReturnObject extends ComboboxReturnMode,
+  TItem extends Identity
+> = TReturnObject extends 'all-fields'
+  ? TItem | null
+  : TReturnObject extends 'id-name'
+    ? Pick<TItem, 'id' | 'name'> | null
+    : string | null;
+
+type ComboboxOnChange<
+  TReturnObject extends ComboboxReturnMode ,
+  TItem extends Identity
+> = TReturnObject extends 'all-fields'
+  ? (item: TItem | null) => void
+  : TReturnObject extends 'id-name'
+    ? (item: Pick<TItem, 'id' | 'name'> | null) => void
+    : (itemId: string) => void;
+
+export interface ComboboxProps<
+  TReturnObject extends ComboboxReturnMode = undefined,
+  TQuery extends UseInfiniteQueryResult<{
+    pages: Array<{ data: Identity[] }>;
+  }> = UseInfiniteQueryResult<{ pages: Array<{ data: Identity[] }> }>,
+  TItem extends Identity = InferQueryData<TQuery>
+> {
   id?: string;
-  value?: ComboboxValue<T>;
-  onChange?: ComboboxOnChange<T>;
+  value?: ComboboxValue<TReturnObject, TItem>;
+  onChange?: ComboboxOnChange<TReturnObject, TItem>;
   disabled?: boolean;
   icon?: LucideIcon;
-  returnObject?: T;
+  returnObject?: TReturnObject;
   className?: string;
   'aria-invalid'?: boolean;
-  renderItem?: (item: Identity) => string | ReactNode;
-}
-
-interface GenericComboboxProps<T extends boolean = false> extends ComboboxProps<T> {
+  renderItem?: (item: TItem) => string | ReactNode;
   // Customization props
   placeholder: string;
   searchPlaceholder: string;
   emptyMessage: string;
   loadingMessage: string;
   errorMessage: string;
-
   // Query hook
-  useInfiniteQuery: (search: string) => UseInfiniteQueryResult<{
-    pages: Array<{ data: Identity[] }>;
-  }>;
+  useInfiniteQuery: (search: string) => TQuery;
 }
 
-/* ---------- Function overload declarations ---------- ไม่มีก็ยังไม่เห็นปัญหานะ น่าจะไม่มีก็ได้*/ 
-export function Combobox(
-  props: GenericComboboxProps<false>
-): JSX.Element;
-export function Combobox(
-  props: GenericComboboxProps<true>
-): JSX.Element;
-
-export default function Combobox<T extends boolean = false>({
+export default function Combobox<
+  TReturnObject extends ComboboxReturnMode = undefined,
+  TQuery extends UseInfiniteQueryResult<{
+    pages: Array<{ data: Identity[] }>;
+  }> = UseInfiniteQueryResult<{ pages: Array<{ data: Identity[] }> }>,
+  TItem extends Identity = InferQueryData<TQuery>
+>({
   id,
   value,
   onChange,
@@ -78,7 +95,7 @@ export default function Combobox<T extends boolean = false>({
   'aria-invalid': ariaInvalid,
   renderItem,
   useInfiniteQuery,
-}: GenericComboboxProps<T>) {
+}: ComboboxProps<TReturnObject, TQuery, TItem>) {
   const [open, setOpen] = useState(false);
   const [searchName, setSearchName] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -95,7 +112,7 @@ export default function Combobox<T extends boolean = false>({
 
   // Flatten all pages into a single array
   const items = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) ?? [];
+    return (data?.pages.flatMap((page) => page.data) ?? []) as TItem[];
   }, [data]);
 
   // แปลง value เป็น id
@@ -110,23 +127,27 @@ export default function Combobox<T extends boolean = false>({
     return items.find((item) => item.id === selectedId);
   }, [selectedId, items]);
 
-  const handleSelect = (item: Identity) => {
-    // Clear selection
+  const handleSelect = (item: TItem) => {
     if (selectedId === item.id) {
-      if (returnObject) {
-        (onChange as (item: Identity | null) => void)?.(null);
+      // Deselect
+      if (returnObject === 'all-fields' || returnObject === 'id-name') {
+        (onChange as (item: TItem | Pick<TItem, 'id' | 'name'> | null) => void)?.(null);
       } else {
         (onChange as (itemId: string) => void)?.('');
       }
     } else {
-      // Select new account
-      if (returnObject) {
-        (onChange as (item: Identity | null) => void)?.({
+      if (returnObject === 'all-fields') {
+        // ส่งทั้งก้อน
+        (onChange as (item: TItem | null) => void)?.(item as TItem);
+      } else if (returnObject === 'id-name') {
+        // ส่งแค่ id, name
+        (onChange as (item: Pick<TItem, 'id' | 'name'> | null) => void)?.({
           id: item.id,
           name: item.name,
-        });
+        } as Pick<TItem, 'id' | 'name'>);
       } else {
-        (onChange as (itemId: string) => void)?.(item.id);
+        // ส่งแค่ id (string)
+        (onChange as (itemId: string) => void)?.(item.id!);
       }
     }
     setOpen(false);
