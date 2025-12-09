@@ -55,8 +55,8 @@ export default function SkuCombobox<TReturnObject extends ComboboxReturnMode = u
       errorMessage="Error loading SKUs"
       disabled={!accountId || props.disabled}
       renderItem={defaultRenderItem}
-      useInfiniteQuery={(search) =>
-        useSkuWithAccountInfinite(accountId, search)
+      useInfiniteQuery={(searchName, selectedId) =>
+        useSkuWithAccountInfinite(accountId, searchName, selectedId)
       }
     />
   );
@@ -113,11 +113,53 @@ const fetchSkuWithAccount = async (
   pageParam: number,
   accountId: string,
   searchName?: string
+  selectedId?: string | null
 ) => {
-  const filters = [`active eq true`, `startswith(id,'${accountId}')`];
+  const baseFilter = `active eq true and startswith(id,'${accountId}')`;
 
-  if (searchName) {
-    filters.push(`contains(name,'${searchName}')`);
+  // ถ้ามี selectedId แต่ไม่มี search → fetch list ปกติ + fetch selectedId แยก
+  if (selectedId && !searchName) {
+    const [listResponse, selectedResponse] = await Promise.all([
+      apiClient.get<SkuWithAccountInfinite>(endpoints.sku.getAll, {
+        params: {
+          $select: 'id,code,name,internalCode,barcode',
+          $expand: 'info',
+          $skip: (pageParam - 1) * PER_PAGE,
+          $top: PER_PAGE,
+          $orderby: 'name asc',
+          $filter: baseFilter,
+        },
+      }),
+      apiClient.get<SkuWithAccountInfinite>(endpoints.sku.getAll, {
+        params: {
+          $select: 'id,code,name,internalCode,barcode',
+          $expand: 'info',
+          $filter: `${baseFilter} and id eq '${selectedId}'`,
+          $top: 1,
+        },
+      }),
+    ]);
+
+    const listData = listResponse.data;
+    const selectedData = selectedResponse.data;
+
+    const combined = [...listData];
+    if (selectedData.length > 0 && !listData.some((item) => item.id === selectedId)) {
+      combined.unshift(selectedData[0]);
+    }
+
+    return {
+      data: combined,
+      nextPage: listData.length === PER_PAGE ? pageParam + 1 : undefined,
+    };
+  }
+
+  // ถ้ามี search → filter by name (+ selectedId ถ้ามี)
+  let filter = baseFilter;
+  if (searchName && selectedId) {
+    filter += ` and (contains(name,'${searchName}') or id eq '${selectedId}')`;
+  } else if (searchName) {
+    filter += ` and contains(name,'${searchName}')`;
   }
 
   const params: Record<string, unknown> = {
@@ -126,7 +168,7 @@ const fetchSkuWithAccount = async (
     $skip: (pageParam - 1) * PER_PAGE,
     $top: PER_PAGE,
     $orderby: 'name asc',
-    $filter: filters.join(' and '),
+    $filter: filter,
   };
 
   const response = await apiClient.get<SkuWithAccountInfinite>(
@@ -142,12 +184,13 @@ const fetchSkuWithAccount = async (
 
 export const useSkuWithAccountInfinite = (
   accountId: string,
-  searchName?: string
+  searchName?: string,
+  selectedId?: string | null
 ) => {
   return useInfiniteQuery({
-    queryKey: skuKeys.accountId(accountId),
+    queryKey: skuKeys.accountId(accountId, searchName, selectedId),
     queryFn: ({ pageParam }) =>
-      fetchSkuWithAccount(pageParam, accountId, searchName),
+      fetchSkuWithAccount(pageParam, accountId, searchName, selectedId),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: INITIAL_PAGE,
     enabled: !!accountId,
