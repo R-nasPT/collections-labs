@@ -40,7 +40,11 @@ type AccountsInfinite = Pick<Account, 'id' | 'name'>[];
 const PER_PAGE = 50;
 const INITIAL_PAGE = 1;
 
-const fetchAccounts = async (pageParam: number, name?: string) => {
+const fetchAccounts = async (
+  pageParam: number,
+  searchName?: string,
+  selectedId?: string | null
+) => {
   const params: Record<string, unknown> = {
     $select: 'id,name',
     $skip: (pageParam - 1) * PER_PAGE,
@@ -104,7 +108,10 @@ const fetchAccounts = async (pageParam: number, name?: string) => {
   };
 };
 
-export const useAccountsInfinite = (name: string | undefined) => {
+export const useAccountsInfinite = (
+  searchName: string | undefined,
+  selectedId?: string | null
+) => {
   return useInfiniteQuery({
     queryKey: accountKeys.infiniteList(searchName, selectedId),
     queryFn: ({ pageParam }) => fetchAccounts(pageParam, searchName, selectedId),
