@@ -70,7 +70,7 @@ export interface ComboboxProps<
   loadingMessage: string;
   errorMessage: string;
   // Query hook
-  useInfiniteQuery: (search: string) => TQuery;
+  useInfiniteQuery: (searchName: string, selectedId?: string | null) => TQuery;
 }
 
 export default function Combobox<
@@ -100,6 +100,12 @@ export default function Combobox<
   const [searchName, setSearchName] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
+  // แปลง value เป็น id
+  const selectedId = useMemo(() => {
+    if (!value) return null;
+    return typeof value === 'string' ? value : value.id;
+  }, [value]);
+
   // Use the infinite query hook with search parameter
   const {
     data,
@@ -108,18 +114,20 @@ export default function Combobox<
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfiniteQuery(debouncedSearch);
+  } = useInfiniteQuery(debouncedSearch, selectedId);
 
   // Flatten all pages into a single array
   const items = useMemo(() => {
-    return (data?.pages.flatMap((page) => page.data) ?? []) as TItem[];
+    const allItems = (data?.pages.flatMap((page) => page.data) ?? []) as TItem[];
+    
+    // ลบ duplicate ถ้า selectedId โผล่มาใน list มากกว่า 1 ครั้ง (จาก unshift + scroll เจอตัวจริง)
+    const seen = new Set<string>();
+    return allItems.filter((item) => {
+      if (seen.has(item.id!)) return false;
+      seen.add(item.id!);
+      return true;
+    });
   }, [data]);
-
-  // แปลง value เป็น id
-  const selectedId = useMemo(() => {
-    if (!value) return null;
-    return typeof value === 'string' ? value : value.id;
-  }, [value]);
 
   // หา item จาก id
   const selectedItem = useMemo(() => {
