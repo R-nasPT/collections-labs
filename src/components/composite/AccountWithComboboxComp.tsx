@@ -48,8 +48,49 @@ const fetchAccounts = async (pageParam: number, name?: string) => {
     $orderby: 'name asc',
   };
 
-  if (name) {
-    params.$filter = `contains(name,'${name}')`;
+  // ถ้ามี search → filter by name
+  // ถ้ามี selectedId → เพิ่ม or เพื่อให้ได้ item นั้นด้วย
+  if (searchName && selectedId) {
+    params.$filter = `contains(name,'${searchName}') or id eq '${selectedId}'`;
+  } else if (searchName) {
+    params.$filter = `contains(name,'${searchName}')`;
+  } else if (selectedId) {
+    // ไม่มี search แต่มี selectedId → ไม่ filter เลย (ได้ list ปกติ + selectedId อาจอยู่ในนั้น)
+    // แต่ต้องเพิ่ม selectedId เข้าไปด้วยเผื่อไม่อยู่ใน page แรก
+    params.$filter = `id eq '${selectedId}'`;
+
+    // ดึง list ปกติ + item ที่เลือกแยกกัน
+    const [listResponse, selectedResponse] = await Promise.all([
+      apiClient.get<AccountsInfinite>(endpoints.account.getAll, {
+        params: {
+          $select: 'id,name',
+          $skip: (pageParam - 1) * PER_PAGE,
+          $top: PER_PAGE,
+          $orderby: 'name asc',
+        },
+      }),
+      apiClient.get<AccountsInfinite>(endpoints.account.getAll, {
+        params: {
+          $select: 'id,name',
+          $filter: `id eq '${selectedId}'`,
+          $top: 1,
+        },
+      }),
+    ]);
+
+    const listData = listResponse.data;
+    const selectedData = selectedResponse.data;
+
+    // รวม selectedItem เข้าไปถ้าไม่อยู่ใน list
+    const combined = [...listData];
+    if (selectedData.length > 0 && !listData.some((item) => item.id === selectedId)) {
+      combined.unshift(selectedData[0]);
+    }
+
+    return {
+      data: combined,
+      nextPage: listData.length === PER_PAGE ? pageParam + 1 : undefined,
+    };
   }
 
   const response = await apiClient.get<AccountsInfinite>(
@@ -65,8 +106,8 @@ const fetchAccounts = async (pageParam: number, name?: string) => {
 
 export const useAccountsInfinite = (name: string | undefined) => {
   return useInfiniteQuery({
-    queryKey: [accountKeys.infiniteList(name)],
-    queryFn: ({ pageParam }) => fetchAccounts(pageParam, name),
+    queryKey: accountKeys.infiniteList(searchName, selectedId),
+    queryFn: ({ pageParam }) => fetchAccounts(pageParam, searchName, selectedId),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: INITIAL_PAGE,
   });
