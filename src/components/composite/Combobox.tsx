@@ -64,8 +64,8 @@ export interface ComboboxProps<
   'aria-invalid'?: boolean;
   renderItem?: (item: TItem) => string | ReactNode;
   // Customization props
-  placeholder: string;
-  searchPlaceholder: string;
+  placeholder?: string;
+  searchPlaceholder?: string;
   emptyMessage: string;
   loadingMessage: string;
   errorMessage: string;
@@ -87,8 +87,8 @@ export default function Combobox<
   returnObject,
   className,
   icon: Icon,
-  placeholder,
-  searchPlaceholder,
+  placeholder = 'Select an option',
+  searchPlaceholder = 'Search...',
   emptyMessage,
   loadingMessage,
   errorMessage,
@@ -228,6 +228,8 @@ export default function Combobox<
       <PopoverContent
         className="w-(--radix-popover-trigger-width) p-0"
         align="start"
+        {/* สาเหตุคือ Radix Dialog มี scroll lock ที่จะ capture wheel events เพื่อป้องกันไม่ให้ scroll background การ stopPropagation() จะหยุดไม่ให้ event ขึ้นไปถึง Dialog */}
+        onWheel={(e) => e.stopPropagation()}
       >
         <Command>
           <CommandInput
