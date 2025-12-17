@@ -8,8 +8,6 @@ import Combobox, {
 type AccountComboboxProps<TReturnObject extends ComboboxReturnMode = undefined> = Omit<
   ComboboxProps<TReturnObject, ReturnType<typeof useAccountsInfinite>>,
   | 'icon'
-  | 'placeholder'
-  | 'searchPlaceholder'
   | 'emptyMessage'
   | 'loadingMessage'
   | 'errorMessage'
@@ -23,8 +21,8 @@ export default function AccountCombobox<
     <Combobox
       {...props}
       icon={Store}
-      placeholder="ร้านค้า..."
-      searchPlaceholder="ค้นหา ร้านค้า..."
+      placeholder={props.placeholder || 'เลือก ร้านค้า'}
+      searchPlaceholder={props.searchPlaceholder || 'ค้นหา ร้านค้า...'}
       emptyMessage="No account found"
       loadingMessage="Loading accounts..."
       errorMessage="Error loading accounts"
