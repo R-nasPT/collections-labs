@@ -7,8 +7,6 @@ interface SkuComboboxProps<TReturnObject extends ComboboxReturnMode = undefined>
   extends Omit<
     ComboboxProps<TReturnObject, ReturnType<typeof useSkuWithAccountInfinite>>,
     | 'useInfiniteQuery'
-    | 'placeholder'
-    | 'searchPlaceholder'
     | 'emptyMessage'
     | 'loadingMessage'
     | 'errorMessage'
@@ -46,7 +44,6 @@ export default function SkuCombobox<TReturnObject extends ComboboxReturnMode = u
 
   return (
     <Combobox
-      {...props}
       icon={Package}
       placeholder="Select SKU..."
       searchPlaceholder="Search SKU..."
@@ -58,6 +55,7 @@ export default function SkuCombobox<TReturnObject extends ComboboxReturnMode = u
       useInfiniteQuery={(searchName, selectedId) =>
         useSkuWithAccountInfinite(accountId, searchName, selectedId)
       }
+      {...props}
     />
   );
 }
