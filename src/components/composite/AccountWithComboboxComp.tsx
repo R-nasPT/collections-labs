@@ -19,14 +19,14 @@ export default function AccountCombobox<
 >(props: AccountComboboxProps<TReturnObject>) {
   return (
     <Combobox
-      {...props}
       icon={Store}
-      placeholder={props.placeholder || 'เลือก ร้านค้า'}
-      searchPlaceholder={props.searchPlaceholder || 'ค้นหา ร้านค้า...'}
+      placeholder='เลือก ร้านค้า'
+      searchPlaceholder='ค้นหา ร้านค้า...'
       emptyMessage="No account found"
       loadingMessage="Loading accounts..."
       errorMessage="Error loading accounts"
       useInfiniteQuery={useAccountsInfinite}
+      {...props}
     />
   );
 }
