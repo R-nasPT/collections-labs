@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import { utils, writeFile } from 'xlsx';
 
 interface Column {
   header: string;
@@ -12,19 +12,19 @@ interface ExportOptions<T extends object> {
   columns: Column[];
   sheetName?: string;
   filename?: string;
-  format?: "xlsx" | "csv";
+  format?: 'xlsx' | 'csv';
 }
 
 export const exportToFile = <T extends object>({
   data = [],
   columns = [],
-  sheetName = "Sheet1",
-  filename = "export-data",
-  format = "xlsx",
+  sheetName = 'Sheet1',
+  filename = 'export-data',
+  format = 'xlsx',
 }: ExportOptions<T>): boolean => {
   try {
     if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error("ไม่มีข้อมูลสำหรับส่งออก");
+      console.error('ไม่มีข้อมูลสำหรับส่งออก');
       return false;
     }
 
@@ -38,11 +38,11 @@ export const exportToFile = <T extends object>({
         const row = columns.map((column) => {
           const fieldName = column.key;
           const value = (item as Record<string, unknown>)[fieldName];
-          if (value === undefined) return "";
+          if (value === undefined) return '';
           if (
-            typeof value === "string" ||
-            typeof value === "number" ||
-            typeof value === "boolean" ||
+            typeof value === 'string' ||
+            typeof value === 'number' ||
+            typeof value === 'boolean' ||
             value === null
           ) {
             return value;
@@ -59,11 +59,11 @@ export const exportToFile = <T extends object>({
         data.forEach((item: T) => {
           const row = headers.map((header) => {
             const value = (item as Record<string, unknown>)[header];
-            if (value === undefined) return "";
+            if (value === undefined) return '';
             if (
-              typeof value === "string" ||
-              typeof value === "number" ||
-              typeof value === "boolean" ||
+              typeof value === 'string' ||
+              typeof value === 'number' ||
+              typeof value === 'boolean' ||
               value === null
             ) {
               return value;
@@ -75,33 +75,36 @@ export const exportToFile = <T extends object>({
       }
     }
 
-    const ws = XLSX.utils.aoa_to_sheet(processedData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const ws = utils.aoa_to_sheet(processedData);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, sheetName);
 
-    if (format.toLowerCase() === "csv") {
-      const csvContent = XLSX.utils.sheet_to_csv(ws);
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    if (format.toLowerCase() === 'csv') {
+      const csvContent = utils.sheet_to_csv(ws);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `${filename}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } else {
-      XLSX.writeFile(wb, `${filename}.xlsx`);
+      writeFile(wb, `${filename}.xlsx`);
     }
 
     return true;
   } catch (error) {
     console.error(
-      "เกิดข้อผิดพลาดในการส่งออกข้อมูล:",
+      'เกิดข้อผิดพลาดในการส่งออกข้อมูล:',
       error instanceof Error ? error.message : String(error)
     );
     return false;
   }
 };
+
+// ================================
+ใช้ "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
 
 // ----------------- example -----------------------
 
