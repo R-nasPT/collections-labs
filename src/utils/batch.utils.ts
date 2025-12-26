@@ -53,6 +53,7 @@ mutate(ids, {
   onError: (error) => {
     if (error instanceof BatchOperationError) {
       // access error.failedResponses, error.totalCount
+      console.error(JSON.stringify(error.failedResponses, null, 2));
       toast.error(`ล้มเหลว ${error.failedResponses.length} รายการ`);
     }
   },
