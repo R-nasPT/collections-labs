@@ -114,3 +114,65 @@ const getHighestPermissionLevel = (): number => {
   
   return Math.max(...permissions.map(p => permissionLevels[p] || 0));
 };
+
+// ===========================================================================
+// แบบถูกต้องจริงๆ
+// ===========================================================================
+
+// src/core/hooks/usePermissions.ts
+import { useAuthStore } from '@/core/stores/auth.store';
+import type { ApiRoles } from '@/shared/types';
+
+const PERMISSIONS = {
+  // feature access
+  warehouse: ['warehouse', 'admin'],
+  advice: ['advice', 'admin'],
+  sku: ['sku', 'admin'],
+  shop: ['shop', 'shopOwner', 'admin'],
+  account: ['account', 'admin'],
+  note: ['note', 'admin'],
+
+  // actions
+  canManageOrders: ['admin', 'shopOwner', 'warehouse'],
+  canEditSku: ['admin', 'sku'],
+  canViewReports: ['admin', 'shopOwner', 'account'],
+} as const satisfies Record<string, ApiRoles[]>;
+
+type Permission = keyof typeof PERMISSIONS;
+
+export function usePermissions() {
+  const roles = useAuthStore((s) => s.user?.roles ?? []);
+
+  const hasPermission = (permission: Permission) =>
+    PERMISSIONS[permission].some((role) => roles.includes(role));
+
+  const hasAnyPermission = (permissions: Permission[]) =>
+    permissions.some((permission) => hasPermission(permission));
+
+  const hasAllPermissions = (permissions: Permission[]) =>
+    permissions.every((permission) => hasPermission(permission));
+
+  return { hasPermission, hasAnyPermission, hasAllPermissions };
+}
+
+// =============================== ใช้งาน ==================================
+
+function MyComponent() {
+  const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermissions();
+
+  // เช็คเดี่ยว
+  if (hasPermission('warehouse')) { ... }
+
+  // เช็คอย่างน้อย 1 อัน
+  if (hasAnyPermission(['warehouse', 'advice'])) { ... }
+
+  // เช็คทุกอัน
+  if (hasAllPermissions(['admin', 'canManageOrders'])) { ... }
+
+  return (
+    <>
+      {hasPermission('warehouse') && <WarehouseMenu />}
+      {hasAnyPermission(['admin', 'shopOwner']) && <ManagePanel />}
+    </>
+  );
+}
