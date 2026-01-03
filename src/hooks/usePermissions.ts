@@ -156,7 +156,7 @@ export function usePermissions() {
   const hasAllPermissions = (permissions: Permission[]) =>
     permissions.every((permission) => hasPermission(permission));
 
-  return { hasPermission, hasAnyPermission, hasAllPermissions };
+  return { hasRole, hasPermission, hasAnyPermission, hasAllPermissions };
 }
 
 // =============================== ใช้งาน ==================================
