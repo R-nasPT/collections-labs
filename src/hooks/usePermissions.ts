@@ -143,6 +143,10 @@ type Permission = keyof typeof PERMISSIONS;
 export function usePermissions() {
   const roles = useAuthStore((s) => s.user?.roles ?? []);
 
+  // เช็ค role ตรงๆ
+  const hasRole = (role: ApiRoles) => roles.includes(role);
+
+  // เช็ค permission (อาจมาจากหลาย roles)
   const hasPermission = (permission: Permission) =>
     PERMISSIONS[permission].some((role) => roles.includes(role));
 
@@ -159,6 +163,17 @@ export function usePermissions() {
 
 function MyComponent() {
   const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermissions();
+
+  // เช็ค role ตรงๆ (ไม่รวม admin)
+  if (hasRole('shopOwner')) { ... }
+
+  // เช็ค permission (รวม admin ด้วย)
+  if (hasPermission('warehouse')) { ... }
+
+  // ผสมกันก็ได้
+  if (hasRole('admin') || hasPermission('canManageOrders')) { ... }
+
+  // ---------------------------------------------------------------
 
   // เช็คเดี่ยว
   if (hasPermission('warehouse')) { ... }
