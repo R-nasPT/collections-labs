@@ -54,3 +54,19 @@ export default function RollingNumber({
     </span>
   );
 }
+
+// =================================== example ========================================
+
+const formatDuration = (ms: number) => {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
+
+// ตัวเลขปกติ (default: Math.round + toLocaleString)
+<RollingNumber value={1234} />  // "1,234"
+
+// Duration format
+<RollingNumber value={3661000} format={formatDuration} />  // "01:01:01"
